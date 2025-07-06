@@ -15,6 +15,10 @@ class ServiceHttpClient {
     };
   }
 
+  Future<Map<String, String>> getHeaders({bool withToken = false}) async {
+    return await _headers(withToken: withToken);
+  }
+
   Future<http.Response> post(String endPoint, Map<String, dynamic> body) async {
     final url = Uri.parse('$baseUrl$endPoint');
     final headers = await _headers();

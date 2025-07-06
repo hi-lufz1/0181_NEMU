@@ -1,0 +1,34 @@
+
+import 'package:http/http.dart' as http;
+import 'package:nemu_app/data/model/request/shared/get_filter_req_model.dart';
+import 'package:nemu_app/data/model/response/shared/getall_res_model.dart';
+import 'package:nemu_app/services/service_http_client.dart';
+
+
+class GetadminLaporanRepository {
+  final ServiceHttpClient _httpClient = ServiceHttpClient();
+  
+  /// Filter laporan admin
+  Future<GetallResModel> filterAdmin(GetFilterReqModel req) async {
+    try {
+      final query = req.toQueryParameters();
+      final uri = Uri.parse('${_httpClient.baseUrl}laporan/admin/filter').replace(queryParameters: query);
+      final headers = await _httpClient.getHeaders(withToken: true);
+
+      final res = await http.get(uri, headers: headers);
+      return GetallResModel.fromJson(res.body);
+    } catch (e) {
+      throw Exception('Gagal memfilter laporan admin: $e');
+    }
+  }
+
+  /// Ambil semua laporan untuk admin (tanpa filter)
+  Future<GetallResModel> getAllAdmin() async {
+    try {
+      final http.Response res = await _httpClient.get('laporan/admin');
+      return GetallResModel.fromJson(res.body);
+    } catch (e) {
+      throw Exception('Gagal mengambil semua laporan admin: $e');
+    }
+  }
+}
