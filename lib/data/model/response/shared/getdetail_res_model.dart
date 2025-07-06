@@ -1,34 +1,34 @@
 import 'dart:convert';
 
-class GetallResModel {
+class GetdetailResModel {
     final int? status;
     final String? message;
-    final List<Datum>? data;
+    final Data? data;
 
-    GetallResModel({
+    GetdetailResModel({
         this.status,
         this.message,
         this.data,
     });
 
-    factory GetallResModel.fromJson(String str) => GetallResModel.fromMap(json.decode(str));
+    factory GetdetailResModel.fromJson(String str) => GetdetailResModel.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());
 
-    factory GetallResModel.fromMap(Map<String, dynamic> json) => GetallResModel(
+    factory GetdetailResModel.fromMap(Map<String, dynamic> json) => GetdetailResModel(
         status: json["status"],
         message: json["message"],
-        data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromMap(x))),
+        data: json["data"] == null ? null : Data.fromMap(json["data"]),
     );
 
     Map<String, dynamic> toMap() => {
         "status": status,
         "message": message,
-        "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toMap())),
+        "data": data?.toMap(),
     };
 }
 
-class Datum {
+class Data {
     final String? id;
     final String? userId;
     final String? tipe;
@@ -46,7 +46,7 @@ class Datum {
     final dynamic dihapusPada;
     final DateTime? dibuatPada;
 
-    Datum({
+    Data({
         this.id,
         this.userId,
         this.tipe,
@@ -65,11 +65,11 @@ class Datum {
         this.dibuatPada,
     });
 
-    factory Datum.fromJson(String str) => Datum.fromMap(json.decode(str));
+    factory Data.fromJson(String str) => Data.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());
 
-    factory Datum.fromMap(Map<String, dynamic> json) => Datum(
+    factory Data.fromMap(Map<String, dynamic> json) => Data(
         id: json["id"],
         userId: json["user_id"],
         tipe: json["tipe"],
