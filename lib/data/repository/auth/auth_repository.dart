@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:nemu_app/core/utils/json_helper.dart';
 import 'package:nemu_app/data/model/request/auth/login_req_model.dart';
 import 'package:nemu_app/data/model/request/auth/register_req_model.dart';
 import 'package:nemu_app/data/model/response/auth/login_res_model.dart';
 import 'package:nemu_app/data/model/response/auth/register_res_model.dart';
 import 'package:nemu_app/services/service_http_client.dart';
-
 
 class AuthRepository {
   final ServiceHttpClient _httpClient = ServiceHttpClient();
@@ -20,18 +20,14 @@ class AuthRepository {
         request.toMap(),
       );
 
-      final jsonMap = json.decode(res.body);
+      final jsonMap = parseJsonSafe(res.body);
+      final loginRes = LoginResModel.fromMap(jsonMap);
 
-      if (res.statusCode == 200) {
-        final loginRes = LoginResModel.fromMap(jsonMap);
-        if (loginRes.token != null) {
-          // Simpan token
-          await _secureStorage.write(key: 'authToken', value: loginRes.token);
-        }
-        return loginRes;
-      } else {
-        return LoginResModel.fromMap(jsonMap);
+      if (res.statusCode == 200 && loginRes.token != null) {
+        await _secureStorage.write(key: 'authToken', value: loginRes.token);
       }
+
+      return loginRes;
     } catch (e) {
       throw Exception('Login gagal: $e');
     }
@@ -45,7 +41,10 @@ class AuthRepository {
         request.toMap(),
       );
 
-      return RegisterResModel.fromJson(res.body);
+      final jsonMap = parseJsonSafe(res.body);
+      final registerRes = RegisterResModel.fromMap(jsonMap);
+
+      return registerRes;
     } catch (e) {
       throw Exception('Registrasi gagal: $e');
     }
