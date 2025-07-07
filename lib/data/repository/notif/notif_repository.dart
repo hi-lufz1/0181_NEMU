@@ -1,0 +1,16 @@
+import 'package:http/http.dart' as http;
+import 'package:nemu_app/data/model/response/umum/notif_res_model.dart';
+import 'package:nemu_app/services/service_http_client.dart';
+
+class NotifRepository {
+  final ServiceHttpClient _httpClient = ServiceHttpClient();
+
+  Future<NotifResModel> getNotifikasiUser() async {
+    try {
+      final res = await _httpClient.getWithToken('notif');
+      return NotifResModel.fromJson(res.body);
+    } catch (e) {
+      throw Exception('Gagal mengambil notifikasi: $e');
+    }
+  }
+}
