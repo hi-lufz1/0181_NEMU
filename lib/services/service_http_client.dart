@@ -35,9 +35,21 @@ class ServiceHttpClient {
     }
   }
 
-  Future<http.Response> get(String endPoint) async {
+  Future<http.Response> getWithToken(String endPoint) async {
     final url = Uri.parse('$baseUrl$endPoint');
     final headers = await _headers(withToken: true);
+
+    try {
+      final response = await http.get(url, headers: headers);
+      return response;
+    } catch (e) {
+      throw Exception('GET with token failed: $e');
+    }
+  }
+
+  Future<http.Response> getPublic(String endPoint) async {
+    final url = Uri.parse('$baseUrl$endPoint');
+    final headers = await _headers(withToken: false);
 
     try {
       final response = await http.get(url, headers: headers);

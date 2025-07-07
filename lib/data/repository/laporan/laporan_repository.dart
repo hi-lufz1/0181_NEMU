@@ -17,7 +17,7 @@ class LaporanRepository {
   /// GET: Ambil semua laporan aktif (user)
   Future<GetallResModel> getAllAktif() async {
     try {
-      final res = await _httpClient.get('laporan');
+      final res = await _httpClient.getPublic('laporan');
       return GetallResModel.fromJson(res.body);
     } catch (e) {
       throw Exception('Gagal mengambil laporan aktif: $e');
@@ -27,7 +27,7 @@ class LaporanRepository {
   /// GET: Ambil laporan berdasarkan ID
   Future<GetdetailResModel> getById(String id) async {
     try {
-      final res = await _httpClient.get('laporan/$id');
+      final res = await _httpClient.getWithToken('laporan/$id');
       return GetdetailResModel.fromJson(res.body);
     } catch (e) {
       throw Exception('Gagal mengambil detail laporan: $e');
@@ -37,7 +37,7 @@ class LaporanRepository {
   /// GET: Ambil laporan milik user sendiri
   Future<GetallResModel> getLaporanSaya() async {
     try {
-      final res = await _httpClient.get('laporan/saya');
+      final res = await _httpClient.getWithToken('laporan/saya');
       return GetallResModel.fromJson(res.body);
     } catch (e) {
       throw Exception('Gagal mengambil laporan sendiri: $e');

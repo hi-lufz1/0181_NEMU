@@ -28,7 +28,7 @@ class LaporanAdminRepository {
   /// Ambil semua laporan untuk admin (tanpa filter)
   Future<GetallResModel> getAllAdmin() async {
     try {
-      final http.Response res = await _httpClient.get('laporan/admin');
+      final http.Response res = await _httpClient.getWithToken('laporan/admin');
       return GetallResModel.fromJson(res.body);
     } catch (e) {
       throw Exception('Gagal mengambil semua laporan admin: $e');
