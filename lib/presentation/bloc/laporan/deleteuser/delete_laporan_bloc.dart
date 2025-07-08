@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:nemu_app/data/model/response/umum/delete_res_model.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 
 part 'delete_laporan_event.dart';
@@ -18,11 +19,12 @@ class DeleteLaporanBloc extends Bloc<DeleteLaporanEvent, DeleteLaporanState> {
   ) async {
     emit(DeleteLaporanLoading());
 
-    try {
-      final res = await laporanRepository.deleteLaporanByUser(event.id);
-      emit(DeleteLaporanSuccess(message: res.message ?? "Laporan berhasil dihapus"));
-    } catch (e) {
-      emit(DeleteLaporanFailure(message: e.toString()));
+    final res = await laporanRepository.deleteLaporanByUser(event.id);
+
+    if (res.status == 200) {
+      emit(DeleteLaporanSuccess(resModel: res));
+    } else {
+      emit(DeleteLaporanFailure(resModel: res));
     }
   }
 }

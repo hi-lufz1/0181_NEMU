@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:nemu_app/data/model/request/shared/update_req_model.dart';
+import 'package:nemu_app/data/model/response/shared/update_res_model.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 
 part 'update_laporan_event.dart';
@@ -19,11 +20,12 @@ class UpdateLaporanBloc extends Bloc<UpdateLaporanEvent, UpdateLaporanState> {
   ) async {
     emit(UpdateLaporanLoading());
 
-    try {
-      final res = await laporanRepository.updateLaporan(event.id, event.reqModel);
-      emit(UpdateLaporanSuccess(message: res.message ?? "Laporan berhasil diperbarui"));
-    } catch (e) {
-      emit(UpdateLaporanFailure(message: e.toString()));
+    final res = await laporanRepository.updateLaporan(event.id, event.reqModel);
+
+    if (res.status == 200) {
+      emit(UpdateLaporanSuccess(resModel: res));
+    } else {
+      emit(UpdateLaporanFailure(resModel: res));
     }
   }
 }

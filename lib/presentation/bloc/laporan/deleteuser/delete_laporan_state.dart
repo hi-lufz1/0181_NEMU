@@ -4,7 +4,7 @@ sealed class DeleteLaporanState extends Equatable {
   const DeleteLaporanState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class DeleteLaporanInitial extends DeleteLaporanState {}
@@ -12,19 +12,19 @@ class DeleteLaporanInitial extends DeleteLaporanState {}
 class DeleteLaporanLoading extends DeleteLaporanState {}
 
 class DeleteLaporanSuccess extends DeleteLaporanState {
-  final String message;
+  final DeleteResModel resModel;
 
-  const DeleteLaporanSuccess({required this.message});
+  const DeleteLaporanSuccess({required this.resModel});
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [resModel];
 }
 
 class DeleteLaporanFailure extends DeleteLaporanState {
-  final String message;
+  final DeleteResModel resModel;
 
-  const DeleteLaporanFailure({required this.message});
+  const DeleteLaporanFailure({required this.resModel});
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [resModel];
 }

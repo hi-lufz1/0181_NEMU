@@ -4,7 +4,7 @@ sealed class DeleteLaporanEvent extends Equatable {
   const DeleteLaporanEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class DeleteLaporanSubmitted extends DeleteLaporanEvent {
@@ -13,5 +13,5 @@ class DeleteLaporanSubmitted extends DeleteLaporanEvent {
   const DeleteLaporanSubmitted({required this.id});
 
   @override
-  List<Object> get props => [id];
+  List<Object?> get props => [id];
 }

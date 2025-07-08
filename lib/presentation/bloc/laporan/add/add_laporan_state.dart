@@ -4,7 +4,7 @@ sealed class AddLaporanState extends Equatable {
   const AddLaporanState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class AddLaporanInitial extends AddLaporanState {}
@@ -12,22 +12,19 @@ class AddLaporanInitial extends AddLaporanState {}
 class AddLaporanLoading extends AddLaporanState {}
 
 class AddLaporanSuccess extends AddLaporanState {
-  final String message;
+  final AddLaporanResModel resModel;
 
-  const AddLaporanSuccess({required this.message});
+  const AddLaporanSuccess({required this.resModel});
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [resModel];
 }
 
 class AddLaporanFailure extends AddLaporanState {
-  final String message;
+  final AddLaporanResModel resModel;
 
-  const AddLaporanFailure({required this.message});
+  const AddLaporanFailure({required this.resModel});
 
   @override
-  List<Object> get props => [message];
-  
-  @override
-  String toString() => 'AddLaporanFailure { message: $message }';
+  List<Object?> get props => [resModel];
 }
