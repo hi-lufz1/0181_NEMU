@@ -12,20 +12,19 @@ class LaporanUserInitial extends LaporanUserState {}
 class LaporanUserLoading extends LaporanUserState {}
 
 class LaporanUserSuccess extends LaporanUserState {
-  final List<Datum> data;
-  final String message;
+  final GetallResModel resModel;
 
-  const LaporanUserSuccess({required this.data, required this.message});
+  const LaporanUserSuccess({required this.resModel});
 
   @override
-  List<Object?> get props => [data, message];
+  List<Object?> get props => [resModel];
 }
 
 class LaporanUserFailure extends LaporanUserState {
-  final String message;
+  final GetallResModel resModel;
 
-  const LaporanUserFailure({required this.message});
+  const LaporanUserFailure({required this.resModel});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [resModel];
 }
