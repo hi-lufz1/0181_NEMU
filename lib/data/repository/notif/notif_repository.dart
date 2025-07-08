@@ -10,7 +10,11 @@ class NotifRepository {
       final res = await _httpClient.getWithToken('notif');
       return NotifResModel.fromJson(res.body);
     } catch (e) {
-      throw Exception('Gagal mengambil notifikasi: $e');
+      return NotifResModel(
+        status: 500,
+        message: 'Gagal mengambil notifikasi.',
+        data: [],
+      );
     }
   }
 }
