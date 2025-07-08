@@ -4,6 +4,8 @@ import 'package:nemu_app/data/model/request/auth/register_req_model.dart';
 import 'package:nemu_app/data/model/response/auth/register_res_model.dart';
 import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 
+import '../../../../data/model/response/auth/register_res_model.dart';
+
 part 'register_event.dart';
 part 'register_state.dart';
 
