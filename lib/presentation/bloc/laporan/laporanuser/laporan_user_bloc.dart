@@ -12,13 +12,13 @@ class LaporanUserBloc extends Bloc<LaporanUserEvent, LaporanUserState> {
 
   LaporanUserBloc({required this.laporanRepository})
     : super(LaporanUserInitial()) {
-    on<GetAllLaporanAktif>(_onGetAllAktif);
+    on<FilterLaporanAktif>(_onGetAllAktif);
     on<GetLaporanSaya>(_onGetLaporanSaya);
     on<FilterLaporanAktif>(_onFilterLaporanUser);
   }
 
   Future<void> _onGetAllAktif(
-    GetAllLaporanAktif event,
+    FilterLaporanAktif event,
     Emitter<LaporanUserState> emit,
   ) async {
     emit(LaporanUserLoading());

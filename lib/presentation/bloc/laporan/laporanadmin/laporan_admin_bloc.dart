@@ -36,7 +36,7 @@ class LaporanAdminBloc extends Bloc<LaporanAdminEvent, LaporanAdminState> {
   ) async {
     emit(LaporanAdminLoading());
 
-    final res = await repository.filterAdmin(event.reqModel);
+    final res = await repository.filterAdmin(event.filter);
 
     if (res.status == 200) {
       emit(LaporanAdminSuccess(resModel: res));

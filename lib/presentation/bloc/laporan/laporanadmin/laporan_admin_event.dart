@@ -10,10 +10,10 @@ sealed class LaporanAdminEvent extends Equatable {
 class LaporanAdminRequested extends LaporanAdminEvent {}
 
 class LaporanAdminFiltered extends LaporanAdminEvent {
-  final GetFilterReqModel reqModel;
+  final GetFilterReqModel filter;
 
-  const LaporanAdminFiltered({required this.reqModel});
+  const LaporanAdminFiltered({required this.filter});
 
   @override
-  List<Object?> get props => [reqModel];
+  List<Object?> get props => [filter];
 }

@@ -11,11 +11,11 @@ class GetAllAktifLaporan extends LaporanUserEvent {}
 
 class GetLaporanSaya extends LaporanUserEvent {}
 
-class FilterLaporanUser extends LaporanUserEvent {
-  final GetFilterReqModel reqModel;
+class FilterLaporanAktif extends LaporanUserEvent {
+  final GetFilterReqModel filter;
 
-  const FilterLaporanUser({required this.reqModel});
+  const FilterLaporanAktif({required this.filter});
 
   @override
-  List<Object?> get props => [reqModel];
+  List<Object?> get props => [filter];
 }
