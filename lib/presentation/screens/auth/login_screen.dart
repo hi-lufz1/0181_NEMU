@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               CustomOutlineButton(
                 label: "Create Account",
-                onPressed: () {},
+                onPressed: () {Navigator.pushNamed(context, '/register');},
                 borderColor: Colors.grey,
               ),
               const SizedBox(height: 24),

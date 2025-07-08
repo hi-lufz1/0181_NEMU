@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
+import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,6 +33,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const LoginScreen(),
+      routes: {
+        '/register':
+            (context) => RegisterScreen(), // ✅ Ini route untuk halaman Register
+      },
     );
   }
 }
