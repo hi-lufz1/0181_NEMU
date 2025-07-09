@@ -29,7 +29,10 @@ class AuthRepository {
 
       return loginRes;
     } catch (e) {
-      throw Exception('Login gagal: $e');
+      return LoginResModel(
+        status: 500,
+        message: 'Terjadi kesalahan saat login. Silakan coba lagi.',
+      );
     }
   }
 
@@ -46,7 +49,10 @@ class AuthRepository {
 
       return registerRes;
     } catch (e) {
-      throw Exception('Registrasi gagal: $e');
+      return RegisterResModel(
+        status: 500,
+        message: 'Terjadi kesalahan saat registrasi. Silakan coba lagi.',
+      );
     }
   }
 
