@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nemu_app/core/components/custom_button.dart';
 import 'package:nemu_app/core/components/custom_outline_button.dart';
 import 'package:nemu_app/core/constants/colors.dart';
+import 'package:nemu_app/data/model/request/auth/login_req_model.dart';
+import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,68 +26,102 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void _onLoginPressed(BuildContext context) {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email dan password wajib diisi')),
+      );
+      return;
+    }
+
+    context.read<LoginBloc>().add(
+      LoginSubmitted(reqModel: LoginReqModel(email: email, password: password)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 80),
-              Image.asset("assets/images/logo.png", height: 126),
-              const Text(
-                'Welcome back,',
-                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+      body: BlocConsumer<LoginBloc, LoginState>(
+        listener: (context, state) {
+          if (state is LoginFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.responseModel.message ?? 'Login gagal'),
               ),
-              const SizedBox(height: 4),
-              const Text(
-                'blablablabla',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+            );
+          } else if (state is LoginSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.responseModel.message ?? 'Login berhasil'),
               ),
-
-              const SizedBox(height: 32),
-
-              // Email input
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  hintText: 'E-Mail',
-                  prefixIcon: const Icon(Icons.email),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Password input
-              TextField(
-                controller: passwordController,
-                obscureText: obscurePassword,
-                decoration: InputDecoration(
-                  hintText: 'Password',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscurePassword ? Icons.visibility_off : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() => obscurePassword = !obscurePassword);
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Remember me + forgot
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            );
+            Navigator.pushReplacementNamed(context, '/register');
+          }
+        },
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 80),
+                  Image.asset("assets/images/logo.png", height: 126),
+                  const Text(
+                    'Welcome back,',
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Silakan login untuk melanjutkan',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Email
+                  TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      hintText: 'E-Mail',
+                      prefixIcon: const Icon(Icons.email),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Password
+                  TextField(
+                    controller: passwordController,
+                    obscureText: obscurePassword,
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed:
+                            () => setState(
+                              () => obscurePassword = !obscurePassword,
+                            ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Remember me
                   Row(
                     children: [
                       Checkbox(
@@ -95,22 +132,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text("Remember Me"),
                     ],
                   ),
+                  const SizedBox(height: 16),
+
+                  // Button
+                  state is LoginLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : CustomButton(
+                        label: "Sign In",
+                        onPressed: () => _onLoginPressed(context),
+                      ),
+
+                  const SizedBox(height: 12),
+
+                  CustomOutlineButton(
+                    label: "Create Account",
+                    onPressed: () => Navigator.pushNamed(context, '/register'),
+                    borderColor: Colors.grey,
+                  ),
                 ],
               ),
-              const SizedBox(height: 16),
-
-              CustomButton(label: "Sign In", onPressed: () {}),
-              const SizedBox(height: 12),
-
-              CustomOutlineButton(
-                label: "Create Account",
-                onPressed: () {Navigator.pushNamed(context, '/register');},
-                borderColor: Colors.grey,
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
