@@ -20,16 +20,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async {
     emit(LoginLoading());
 
-    try {
-      final response = await authRepository.login(event.reqModel);
+    final response = await authRepository.login(event.reqModel);
 
-      if (response.token != null) {
-        emit(LoginSuccess(responseModel: response));
-      } else {
-        emit(LoginFailure(error: response.message ?? 'Login gagal'));
-      }
-    } catch (e) {
-      emit(LoginFailure(error: e.toString()));
+    if (response.status == 200 && response.token != null) {
+      emit(LoginSuccess(responseModel: response));
+    } else {
+      emit(LoginFailure(responseModel: response));
     }
   }
 }
