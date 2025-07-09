@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nemu_app/core/constants/colors.dart';
 
 class CustomPasswordField extends StatefulWidget {
   final String? hintText;
@@ -29,10 +30,19 @@ class _CustomPasswordFieldState extends State<CustomPasswordField> {
           icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
           onPressed: () => setState(() => _obscure = !_obscure),
         ),
-        border: OutlineInputBorder(
+        enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey), // Saat tidak fokus
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: AppColors.secondary,
+            width: 2,
+          ), // Saat fokus
         ),
       ),
+      cursorColor: AppColors.secondary,
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
 import 'package:nemu_app/presentation/bloc/auth/register/register_bloc.dart';
@@ -26,9 +27,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'NEMU App',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
+        // theme: ThemeData(
+        //   colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+        // ),
         home: const LoginScreen(),
         routes: {
           '/register': (context) => const RegisterScreen(),

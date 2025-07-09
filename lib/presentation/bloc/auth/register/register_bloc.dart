@@ -24,7 +24,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 
     final response = await authRepository.register(event.reqModel);
 
-    if (response.status == 200) {
+    if (response.status == 201) {
       emit(RegisterSuccess(responseModel: response));
     } else {
       emit(RegisterFailure(responseModel: response));
