@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nemu_app/core/components/custom_button.dart';
 import 'package:nemu_app/core/components/custom_outline_button.dart';
+import 'package:nemu_app/core/components/custom_text_field.dart';
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/model/request/auth/login_req_model.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
+import 'package:nemu_app/presentation/screens/auth/components/custom_password_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,7 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool rememberMe = false;
-  bool obscurePassword = true;
 
   @override
   void dispose() {
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 content: Text(state.responseModel.message ?? 'Login berhasil'),
               ),
             );
-            Navigator.pushReplacementNamed(context, '/register');
+            Navigator.pushNamed(context, '/register');
           }
         },
         builder: (context, state) {
@@ -84,40 +85,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 32),
 
                   // Email
-                  TextField(
+                  CustomTextField(
+                    hintText: "E-Mail",
+                    icon: Icons.email,
                     controller: emailController,
-                    decoration: InputDecoration(
-                      hintText: 'E-Mail',
-                      prefixIcon: const Icon(Icons.email),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
                   ),
-                  const SizedBox(height: 16),
 
-                  // Password
-                  TextField(
+                  const SizedBox(height: 16),
+                  CustomPasswordField(
+                    hintText: "Password",
                     controller: passwordController,
-                    obscureText: obscurePassword,
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed:
-                            () => setState(
-                              () => obscurePassword = !obscurePassword,
-                            ),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 8),
 

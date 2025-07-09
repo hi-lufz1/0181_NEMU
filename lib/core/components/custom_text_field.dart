@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
-  final String hintText;
-  final IconData icon;
-  final bool obscureText;
+  final String? hintText;
+  final IconData? icon;
   final TextEditingController controller;
+  final TextInputType? keyboardType;
 
   const CustomTextField({
     super.key,
     required this.hintText,
     required this.icon,
     required this.controller,
-    this.obscureText = false,
+    this.keyboardType = TextInputType.text,
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return TextField(
       controller: controller,
-      obscureText: obscureText,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
         hintText: hintText,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
