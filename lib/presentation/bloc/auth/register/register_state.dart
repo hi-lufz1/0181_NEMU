@@ -13,7 +13,7 @@ final class RegisterSuccess extends RegisterState {
 }
 
 final class RegisterFailure extends RegisterState {
-  final String error;
+   final RegisterResModel responseModel;
 
-  RegisterFailure({required this.error});
+  RegisterFailure({required this.responseModel});
 }

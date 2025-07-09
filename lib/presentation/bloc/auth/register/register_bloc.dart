@@ -10,7 +10,7 @@ part 'register_event.dart';
 part 'register_state.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
- final AuthRepository authRepository;
+  final AuthRepository authRepository;
 
   RegisterBloc({required this.authRepository}) : super(RegisterInitial()) {
     on<RegisterSubmitted>(_onRegisterSubmitted);
@@ -22,16 +22,12 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   ) async {
     emit(RegisterLoading());
 
-    try {
-      final response = await authRepository.register(event.reqModel);
+    final response = await authRepository.register(event.reqModel);
 
-      if (response.status == 200) {
-        emit(RegisterSuccess(responseModel: response)); 
-      } else {
-        emit(RegisterFailure(error: response.message ?? "Pendaftaran gagal"));
-      }
-    } catch (e) {
-      emit(RegisterFailure(error: e.toString()));
+    if (response.status == 200) {
+      emit(RegisterSuccess(responseModel: response));
+    } else {
+      emit(RegisterFailure(responseModel: response));
     }
   }
 }
