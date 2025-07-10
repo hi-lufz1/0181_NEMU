@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nemu_app/core/components/custom_bottom_navbar.dart';
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/model/response/shared/getall_res_model.dart';
+import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/components/feed_post_card.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/components/feed_toggle_tab.dart';
@@ -16,8 +17,8 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  int selectedIndex = 0;      // Untuk tab "Semua" atau "Laporan Saya"
-  int currentNavIndex = 0;    // Untuk bottom navbar
+  int selectedIndex = 0; // Untuk tab "Semua" atau "Laporan Saya"
+  int currentNavIndex = 0; // Untuk bottom navbar
 
   @override
   void initState() {
@@ -39,7 +40,12 @@ class _FeedScreenState extends State<FeedScreen> {
 
   void _onNavTapped(int index) {
     setState(() => currentNavIndex = index);
-    // TODO: Arahkan ke halaman lain jika perlu
+
+    if (index == 0) {
+    } else if (index == 1) {
+    } else if (index == 2) {
+      context.read<FotoLaporanBloc>().add(TakeFromCamera(context));
+    }
   }
 
   @override
@@ -59,7 +65,10 @@ class _FeedScreenState extends State<FeedScreen> {
                     gradient: RadialGradient(
                       center: Alignment.topCenter,
                       radius: 1.5,
-                      colors: [Color.fromARGB(255, 163, 242, 234), Colors.white],
+                      colors: [
+                        Color.fromARGB(255, 163, 242, 234),
+                        Colors.white,
+                      ],
                     ),
                   ),
                   child: SafeArea(
@@ -112,7 +121,9 @@ class _FeedScreenState extends State<FeedScreen> {
                             if (state is LaporanUserLoading) {
                               return const Padding(
                                 padding: EdgeInsets.all(32),
-                                child: Center(child: CircularProgressIndicator()),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
                               );
                             }
 
@@ -120,14 +131,16 @@ class _FeedScreenState extends State<FeedScreen> {
                               return Padding(
                                 padding: const EdgeInsets.all(24),
                                 child: Text(
-                                  state.resModel.message ?? 'Gagal memuat laporan',
+                                  state.resModel.message ??
+                                      'Gagal memuat laporan',
                                   style: const TextStyle(color: Colors.red),
                                 ),
                               );
                             }
 
                             if (state is LaporanUserSuccess) {
-                              final List<Datum> laporanList = state.resModel.data ?? [];
+                              final List<Datum> laporanList =
+                                  state.resModel.data ?? [];
 
                               if (laporanList.isEmpty) {
                                 return const Padding(
@@ -137,11 +150,17 @@ class _FeedScreenState extends State<FeedScreen> {
                               }
 
                               return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 child: Column(
-                                  children: laporanList
-                                      .map((laporan) => FeedPostCard(laporan: laporan))
-                                      .toList(),
+                                  children:
+                                      laporanList
+                                          .map(
+                                            (laporan) =>
+                                                FeedPostCard(laporan: laporan),
+                                          )
+                                          .toList(),
                                 ),
                               );
                             }
@@ -150,7 +169,9 @@ class _FeedScreenState extends State<FeedScreen> {
                           },
                         ),
 
-                        const SizedBox(height: 100), // Beri ruang agar tidak ketimpa navbar
+                        const SizedBox(
+                          height: 100,
+                        ), // Beri ruang agar tidak ketimpa navbar
                       ],
                     ),
                   ),
@@ -169,7 +190,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
       // Floating Action Button
       floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(), 
+        shape: const CircleBorder(),
         backgroundColor: AppColors.primary,
         onPressed: () {
           // TODO: Navigasi ke tambah laporan

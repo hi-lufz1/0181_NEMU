@@ -1,0 +1,56 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:nemu_app/core/utils/storage_helper.dart';
+
+part 'foto_laporan_event.dart';
+part 'foto_laporan_state.dart';
+
+class FotoLaporanBloc extends Bloc<FotoLaporanEvent, FotoLaporanState> {
+  final ImagePicker _picker = ImagePicker();
+
+  FotoLaporanBloc() : super(FotoLaporanInitial()) {
+    on<PickFromGallery>(_onPickFromGallery);
+    on<TakeFromCamera>(_onTakeFromCamera);
+    on<DeleteFoto>(_onDeleteFoto);
+  }
+
+  Future<void> _onPickFromGallery(
+    PickFromGallery event,
+    Emitter<FotoLaporanState> emit,
+  ) async {
+    final picked = await _picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      final saved = await StorageHelper.saveImage(File(picked.path), 'gallery_');
+      emit(FotoLaporanPicked(file: saved, message: 'Berhasil pilih dari galeri'));
+    }
+  }
+
+  Future<void> _onTakeFromCamera(
+    TakeFromCamera event,
+    Emitter<FotoLaporanState> emit,
+  ) async {
+    final picked = await _picker.pickImage(source: ImageSource.camera);
+    if (picked != null) {
+      final saved = await StorageHelper.saveImage(File(picked.path), 'camera_');
+      emit(FotoLaporanPicked(file: saved, message: 'Berhasil ambil dari kamera'));
+    }
+  }
+
+  Future<void> _onDeleteFoto(
+    DeleteFoto event,
+    Emitter<FotoLaporanState> emit,
+  ) async {
+    if (state.file != null) {
+      try {
+        await state.file!.delete();
+        emit(FotoLaporanDeleted(message: 'Foto dihapus'));
+      } catch (_) {
+        emit(FotoLaporanDeleted(message: 'Gagal menghapus foto'));
+      }
+    } else {
+      emit(FotoLaporanDeleted(message: 'Tidak ada foto untuk dihapus'));
+    }
+  }
+}

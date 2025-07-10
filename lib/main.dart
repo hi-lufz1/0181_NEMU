@@ -6,6 +6,7 @@ import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
 import 'package:nemu_app/presentation/bloc/auth/register/register_bloc.dart';
+import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
@@ -32,18 +33,17 @@ class MyApp extends StatelessWidget {
           create: (context) => RegisterBloc(authRepository: AuthRepository()),
         ),
         BlocProvider(
-          create: (context) => LaporanUserBloc(
-            laporanRepository: LaporanRepository(),
-          ),
+          create:
+              (context) =>
+                  LaporanUserBloc(laporanRepository: LaporanRepository()),
         ),
+        BlocProvider<FotoLaporanBloc>(create: (context) => FotoLaporanBloc()),
       ],
       child: MaterialApp(
         title: 'NEMU App',
         debugShowCheckedModeBanner: false,
         home: const LoginScreen(),
-        routes: {
-          '/register': (context) => const RegisterScreen(),
-        },
+        routes: {'/register': (context) => const RegisterScreen()},
       ),
     );
   }

@@ -35,9 +35,9 @@ class CustomBottomNavbar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildNavIcon(Icons.home, 0),
-              _buildNavIcon(Icons.search, 1),
-              _buildNavIcon(Icons.videocam_outlined, 2),
+              _buildNavIcon(Icons.home_rounded, 0),
+              _buildNavIcon(Icons.search_rounded, 1),
+              _buildNavIcon(Icons.photo_camera_rounded, 2),
             ],
           ),
         ),
