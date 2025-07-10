@@ -14,6 +14,8 @@ class FotoLaporanBloc extends Bloc<FotoLaporanEvent, FotoLaporanState> {
     on<PickFromGallery>(_onPickFromGallery);
     on<TakeFromCamera>(_onTakeFromCamera);
     on<DeleteFoto>(_onDeleteFoto);
+    on<SetSelectedFoto>(_onSetSelectedFoto);
+    on<ClearSelectedFoto>(_onClearSelectedFoto);
   }
 
   Future<void> _onPickFromGallery(
@@ -22,21 +24,26 @@ class FotoLaporanBloc extends Bloc<FotoLaporanEvent, FotoLaporanState> {
   ) async {
     final picked = await _picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
-      final saved = await StorageHelper.saveImage(File(picked.path), 'gallery_');
-      emit(FotoLaporanPicked(file: saved, message: 'Berhasil pilih dari galeri'));
+      final saved = await StorageHelper.saveImage(
+        File(picked.path),
+        'gallery_',
+      );
+      emit(
+        FotoLaporanPicked(file: saved, message: 'Berhasil pilih dari galeri'),
+      );
     }
   }
 
-  Future<void> _onTakeFromCamera(
-    TakeFromCamera event,
-    Emitter<FotoLaporanState> emit,
-  ) async {
-    final picked = await _picker.pickImage(source: ImageSource.camera);
-    if (picked != null) {
-      final saved = await StorageHelper.saveImage(File(picked.path), 'camera_');
-      emit(FotoLaporanPicked(file: saved, message: 'Berhasil ambil dari kamera'));
-    }
+Future<void> _onTakeFromCamera(
+  TakeFromCamera event,
+  Emitter<FotoLaporanState> emit,
+) async {
+  final picked = await _picker.pickImage(source: ImageSource.camera);
+  if (picked != null) {
+    final saved = await StorageHelper.saveImage(File(picked.path), 'camera_');
+    emit(FotoLaporanPicked(file: saved, message: 'Berhasil ambil dari kamera'));
   }
+}
 
   Future<void> _onDeleteFoto(
     DeleteFoto event,
@@ -52,5 +59,19 @@ class FotoLaporanBloc extends Bloc<FotoLaporanEvent, FotoLaporanState> {
     } else {
       emit(FotoLaporanDeleted(message: 'Tidak ada foto untuk dihapus'));
     }
+  }
+
+  Future<void> _onSetSelectedFoto(
+    SetSelectedFoto event,
+    Emitter<FotoLaporanState> emit,
+  ) async {
+    emit(FotoLaporanPicked(file: event.file, message: 'Foto dipilih manual'));
+  }
+
+  Future<void> _onClearSelectedFoto(
+    ClearSelectedFoto event,
+    Emitter<FotoLaporanState> emit,
+  ) async {
+    emit(FotoLaporanInitial());
   }
 }

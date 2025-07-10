@@ -44,158 +44,167 @@ class _FeedScreenState extends State<FeedScreen> {
     if (index == 0) {
     } else if (index == 1) {
     } else if (index == 2) {
-      context.read<FotoLaporanBloc>().add(TakeFromCamera(context));
+      context.read<FotoLaporanBloc>().add(TakeFromCamera());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true, // biar navbar melayang
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height,
-              ),
-              child: IntrinsicHeight(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment.topCenter,
-                      radius: 1.5,
-                      colors: [
-                        Color.fromARGB(255, 163, 242, 234),
-                        Colors.white,
-                      ],
+    return BlocListener<FotoLaporanBloc, FotoLaporanState>(
+      listener: (context, state) {
+        if (state is FotoLaporanPicked) {
+          Navigator.pushNamed(context, '/create-laporan');
+        }
+      },
+      child: Scaffold(
+        extendBody: true, // biar navbar melayang
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height,
+                ),
+                child: IntrinsicHeight(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment.topCenter,
+                        radius: 1.5,
+                        colors: [
+                          Color.fromARGB(255, 163, 242, 234),
+                          Colors.white,
+                        ],
+                      ),
                     ),
-                  ),
-                  child: SafeArea(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const FeedHeader(),
-                        const SizedBox(height: 8),
+                    child: SafeArea(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const FeedHeader(),
+                          const SizedBox(height: 8),
 
-                        // Tab Toggle
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            children: [
-                              FeedToggleTab(
-                                title: "Semua",
-                                isSelected: selectedIndex == 0,
-                                onTap: () => _onTabChanged(0),
-                              ),
-                              const SizedBox(width: 16),
-                              FeedToggleTab(
-                                title: "Laporan Saya",
-                                isSelected: selectedIndex == 1,
-                                onTap: () => _onTabChanged(1),
-                              ),
-                            ],
+                          // Tab Toggle
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                FeedToggleTab(
+                                  title: "Semua",
+                                  isSelected: selectedIndex == 0,
+                                  onTap: () => _onTabChanged(0),
+                                ),
+                                const SizedBox(width: 16),
+                                FeedToggleTab(
+                                  title: "Laporan Saya",
+                                  isSelected: selectedIndex == 1,
+                                  onTap: () => _onTabChanged(1),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
+                          const SizedBox(height: 16),
 
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Recently Post",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "Recently Post",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
+                          const SizedBox(height: 8),
 
-                        // Feed List
-                        BlocBuilder<LaporanUserBloc, LaporanUserState>(
-                          builder: (context, state) {
-                            if (state is LaporanUserLoading) {
-                              return const Padding(
-                                padding: EdgeInsets.all(32),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
-
-                            if (state is LaporanUserFailure) {
-                              return Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Text(
-                                  state.resModel.message ??
-                                      'Gagal memuat laporan',
-                                  style: const TextStyle(color: Colors.red),
-                                ),
-                              );
-                            }
-
-                            if (state is LaporanUserSuccess) {
-                              final List<Datum> laporanList =
-                                  state.resModel.data ?? [];
-
-                              if (laporanList.isEmpty) {
+                          // Feed List
+                          BlocBuilder<LaporanUserBloc, LaporanUserState>(
+                            builder: (context, state) {
+                              if (state is LaporanUserLoading) {
                                 return const Padding(
-                                  padding: EdgeInsets.all(24),
-                                  child: Text("Belum ada laporan."),
+                                  padding: EdgeInsets.all(32),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
                                 );
                               }
 
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                child: Column(
-                                  children:
-                                      laporanList
-                                          .map(
-                                            (laporan) =>
-                                                FeedPostCard(laporan: laporan),
-                                          )
-                                          .toList(),
-                                ),
-                              );
-                            }
+                              if (state is LaporanUserFailure) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: Text(
+                                    state.resModel.message ??
+                                        'Gagal memuat laporan',
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                );
+                              }
 
-                            return const SizedBox();
-                          },
-                        ),
+                              if (state is LaporanUserSuccess) {
+                                final List<Datum> laporanList =
+                                    state.resModel.data ?? [];
 
-                        const SizedBox(
-                          height: 100,
-                        ), // Beri ruang agar tidak ketimpa navbar
-                      ],
+                                if (laporanList.isEmpty) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(24),
+                                    child: Text("Belum ada laporan."),
+                                  );
+                                }
+
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: Column(
+                                    children:
+                                        laporanList
+                                            .map(
+                                              (laporan) => FeedPostCard(
+                                                laporan: laporan,
+                                              ),
+                                            )
+                                            .toList(),
+                                  ),
+                                );
+                              }
+
+                              return const SizedBox();
+                            },
+                          ),
+
+                          const SizedBox(
+                            height: 100,
+                          ), // Beri ruang agar tidak ketimpa navbar
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
 
-          // Floating Bottom Navbar
-          CustomBottomNavbar(
-            currentIndex: currentNavIndex,
-            onTap: _onNavTapped,
-          ),
-        ],
-      ),
+            // Floating Bottom Navbar
+            CustomBottomNavbar(
+              currentIndex: currentNavIndex,
+              onTap: _onNavTapped,
+            ),
+          ],
+        ),
 
-      // Floating Action Button
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        backgroundColor: AppColors.primary,
-        onPressed: () {
-          // TODO: Navigasi ke tambah laporan
-        },
-        child: const Icon(Icons.add),
+        // Floating Action Button
+        floatingActionButton: FloatingActionButton(
+          shape: const CircleBorder(),
+          backgroundColor: AppColors.primary,
+          onPressed: () {
+            context.read<FotoLaporanBloc>().add(ClearSelectedFoto());
+            Navigator.pushNamed(context, '/create-laporan');
+          },
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }

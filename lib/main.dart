@@ -7,9 +7,11 @@ import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
 import 'package:nemu_app/presentation/bloc/auth/register/register_bloc.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/add/add_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
+import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
 
 Future<void> main() async {
@@ -24,26 +26,39 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<LoginBloc>(
-          create: (context) => LoginBloc(authRepository: AuthRepository()),
+    return RepositoryProvider<LaporanRepository>(
+      create: (context) => LaporanRepository(), // buat instance-nya
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<LoginBloc>(
+            create: (context) => LoginBloc(authRepository: AuthRepository()),
+          ),
+          BlocProvider<RegisterBloc>(
+            create: (context) => RegisterBloc(authRepository: AuthRepository()),
+          ),
+          BlocProvider(
+            create:
+                (context) => LaporanUserBloc(
+                  laporanRepository: context.read<LaporanRepository>(),
+                ),
+          ),
+          BlocProvider<FotoLaporanBloc>(create: (context) => FotoLaporanBloc()),
+          BlocProvider<AddLaporanBloc>(
+            create:
+                (context) => AddLaporanBloc(
+                  laporanRepository: context.read<LaporanRepository>(),
+                ),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'NEMU App',
+          debugShowCheckedModeBanner: false,
+          home: const LoginScreen(),
+          routes: {
+            '/register': (context) => const RegisterScreen(),
+            '/create-laporan': (context) => const CreateLaporanScreen(),
+          },
         ),
-        BlocProvider<RegisterBloc>(
-          create: (context) => RegisterBloc(authRepository: AuthRepository()),
-        ),
-        BlocProvider(
-          create:
-              (context) =>
-                  LaporanUserBloc(laporanRepository: LaporanRepository()),
-        ),
-        BlocProvider<FotoLaporanBloc>(create: (context) => FotoLaporanBloc()),
-      ],
-      child: MaterialApp(
-        title: 'NEMU App',
-        debugShowCheckedModeBanner: false,
-        home: const LoginScreen(),
-        routes: {'/register': (context) => const RegisterScreen()},
       ),
     );
   }

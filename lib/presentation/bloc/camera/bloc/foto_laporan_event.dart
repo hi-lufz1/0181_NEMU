@@ -5,8 +5,13 @@ abstract class FotoLaporanEvent {}
 class PickFromGallery extends FotoLaporanEvent {}
 
 class TakeFromCamera extends FotoLaporanEvent {
-  final BuildContext context;
-  TakeFromCamera(this.context);
 }
 
 class DeleteFoto extends FotoLaporanEvent {}
+
+class SetSelectedFoto extends FotoLaporanEvent {
+  final File file;
+  SetSelectedFoto(this.file);
+}
+
+class ClearSelectedFoto extends FotoLaporanEvent {}
