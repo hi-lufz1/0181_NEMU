@@ -17,7 +17,7 @@ class LaporanRepository {
   /// GET: Ambil semua laporan aktif (user)
   Future<GetallResModel> getAllAktif() async {
     try {
-      final res = await _httpClient.getPublic('laporan');
+      final res = await _httpClient.getWithToken('laporan');
       return GetallResModel.fromJson(res.body);
     } catch (e) {
       throw Exception('Gagal mengambil laporan aktif: $e');

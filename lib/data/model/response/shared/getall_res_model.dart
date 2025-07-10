@@ -30,6 +30,7 @@ class GetallResModel {
 
 class Datum {
     final String? id;
+    final String? nama;
     final String? userId;
     final String? tipe;
     final String? namaBarang;
@@ -48,6 +49,7 @@ class Datum {
 
     Datum({
         this.id,
+        this.nama,
         this.userId,
         this.tipe,
         this.namaBarang,
@@ -71,6 +73,7 @@ class Datum {
 
     factory Datum.fromMap(Map<String, dynamic> json) => Datum(
         id: json["id"],
+        nama: json["nama"],
         userId: json["user_id"],
         tipe: json["tipe"],
         namaBarang: json["nama_barang"],
@@ -90,6 +93,7 @@ class Datum {
 
     Map<String, dynamic> toMap() => {
         "id": id,
+        "nama": nama,
         "user_id": userId,
         "tipe": tipe,
         "nama_barang": namaBarang,

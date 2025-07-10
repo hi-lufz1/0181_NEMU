@@ -7,6 +7,7 @@ import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/model/request/auth/login_req_model.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
 import 'package:nemu_app/presentation/screens/auth/components/custom_password_field.dart';
+import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -60,9 +61,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 content: Text(state.responseModel.message ?? 'Login berhasil'),
               ),
             );
-            Navigator.pushNamed(context, '/register');
+
+            // Navigasi ke halaman laporan
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const FeedScreen()),
+            );
           }
         },
+
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.all(24),
