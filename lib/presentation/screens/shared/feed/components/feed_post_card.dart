@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nemu_app/data/model/response/shared/getall_res_model.dart';
@@ -7,12 +10,23 @@ class FeedPostCard extends StatelessWidget {
 
   const FeedPostCard({super.key, required this.laporan});
 
+  Uint8List? getDecodedFoto(String? base64String) {
+    if (base64String == null || base64String.isEmpty) return null;
+    try {
+      return base64Decode(base64String);
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final tanggal =
         laporan.dibuatPada != null
             ? DateFormat('dd MMMM yyyy', 'id_ID').format(laporan.dibuatPada!)
             : '-';
+
+    final Uint8List? decodedFoto = getDecodedFoto(laporan.foto);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -88,21 +102,20 @@ class FeedPostCard extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Foto (jika ada)
-          if (laporan.foto != null && laporan.foto!.isNotEmpty)
+          if (decodedFoto != null)
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                laporan.foto!,
-                height: 180,
+              child: Image.memory(
+                decodedFoto,
+                height: 210,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Text(
-                    'Gagal memuat gambar.',
-                    style: TextStyle(color: Colors.red),
-                  );
-                },
               ),
+            )
+          else if (laporan.foto != null && laporan.foto!.isNotEmpty)
+            const Text(
+              'Gagal memuat gambar.',
+              style: TextStyle(color: Colors.red),
             ),
         ],
       ),
