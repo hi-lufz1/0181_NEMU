@@ -11,7 +11,7 @@ import 'package:nemu_app/presentation/bloc/laporan/add/add_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
-import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan.dart';
+import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
 
 Future<void> main() async {
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'NEMU App',
           debugShowCheckedModeBanner: false,
-          home: const LoginScreen(),
+          home: const CreateLaporanScreen(),
           routes: {
             '/register': (context) => const RegisterScreen(),
             '/create-laporan': (context) => const CreateLaporanScreen(),

@@ -12,7 +12,8 @@ class FeedHeader extends StatelessWidget {
         children: [
           Stack(
             children: [
-              Row( spacing: 4,
+              Row(
+                spacing: 4,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
@@ -46,9 +47,11 @@ class FeedHeader extends StatelessWidget {
               // ),
             ],
           ),
-          const CircleAvatar(
-            radius: 20,
-            backgroundImage: AssetImage('assets/images/logo.png'),
+          IconButton(
+            icon: Icon(Icons.logout, size: 28, color: Colors.black),
+            onPressed: () {
+              //logout
+            },
           ),
         ],
       ),
