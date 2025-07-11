@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'NEMU App',
           debugShowCheckedModeBanner: false,
-          home: const CreateLaporanScreen(),
+          home: const LoginScreen(),
           routes: {
             '/register': (context) => const RegisterScreen(),
             '/create-laporan': (context) => const CreateLaporanScreen(),

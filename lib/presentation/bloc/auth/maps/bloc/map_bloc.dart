@@ -54,45 +54,48 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     PickLocation event,
     Emitter<MapState> emit,
   ) async {
-    final latlng = event.latLng;
-
-    Marker marker = Marker(
-      markerId: const MarkerId('picked'),
-      position: latlng,
-      infoWindow: const InfoWindow(title: 'Lokasi dipilih', snippet: ''),
-    );
-
-    String address = 'Alamat tidak ditemukan';
-
     try {
-      final placemarks = await placemarkFromCoordinates(
-        latlng.latitude,
-        latlng.longitude,
-      ).timeout(const Duration(seconds: 3)); // ⏰ Tambahkan timeout
+      final latlng = event.latLng;
 
-      final p = placemarks.first;
-      marker = Marker(
+      // Buat marker tetap muncul meskipun reverse geocoding gagal
+      Marker marker = Marker(
         markerId: const MarkerId('picked'),
         position: latlng,
-        infoWindow: InfoWindow(
-          title: p.name?.isNotEmpty == true ? p.name : 'Lokasi dipilih',
-          snippet: '${p.street}, ${p.locality}',
-        ),
+        infoWindow: const InfoWindow(title: 'Lokasi dipilih', snippet: ''),
       );
-      address =
-          '${p.name}, ${p.street}, ${p.locality}, ${p.country}, ${p.postalCode}';
-    } catch (e) {
-      address = 'Alamat tidak ditemukan';
+
+      String address = 'Alamat tidak ditemukan';
+
+      try {
+        final placemarks = await placemarkFromCoordinates(
+          latlng.latitude,
+          latlng.longitude,
+        );
+        final p = placemarks.first;
+        marker = Marker(
+          markerId: const MarkerId('picked'),
+          position: latlng,
+          infoWindow: InfoWindow(
+            title: p.name?.isNotEmpty == true ? p.name : 'Lokasi dipilih',
+            snippet: '${p.street}, ${p.locality}',
+          ),
+        );
+        address =
+            '${p.name}, ${p.street}, ${p.locality}, ${p.country}';
+      } catch (_) {
+        // reverse geocoding gagal, address tetap default
+      }
+
       emit(
         state.copyWith(
-          error: 'Gagal mengambil alamat. Silakan coba lokasi lain.',
+          pickedMarker: marker,
+          pickedAddress: address,
+          error: null,
         ),
       );
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
     }
-
-    emit(
-      state.copyWith(pickedMarker: marker, pickedAddress: address, error: null),
-    );
   }
 
   void _onClearPickedLocation(

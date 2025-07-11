@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nemu_app/core/components/custom_text_field.dart';
+import 'package:nemu_app/core/components/image_popup_viewer.dart';
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/core/constants/kategori_list.dart';
 import 'package:nemu_app/data/model/kategori_model.dart';
@@ -36,6 +37,13 @@ class FormLaporan extends StatelessWidget {
     required this.selectedKategori,
   });
 
+  void _showImagePopup(BuildContext context, File imageFile) {
+    showDialog(
+      context: context,
+      builder: (_) => ImagePopupViewer(imageFile: imageFile),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final imageFile = context.watch<FotoLaporanBloc>().state.file;
@@ -45,17 +53,19 @@ class FormLaporan extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ Preview Foto
           if (imageFile != null) ...[
             Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.file(
-                    imageFile,
-                    width: double.infinity,
-                    height: 200,
-                    fit: BoxFit.cover,
+                GestureDetector(
+                  onTap: () => _showImagePopup(context, imageFile),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(
+                      imageFile,
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 Positioned(
@@ -122,6 +132,14 @@ class FormLaporan extends StatelessWidget {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.secondary, width: 2),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.secondary, width: 2),
+              ),
             ),
             value:
                 selectedKategori == null
@@ -130,9 +148,7 @@ class FormLaporan extends StatelessWidget {
                       (kat) => kat.nama == selectedKategori,
                       orElse: () => KategoriList.all.first,
                     ),
-            onChanged: (value) {
-              onKategoriChanged(value?.nama);
-            },
+            onChanged: (value) => onKategoriChanged(value?.nama),
             items:
                 KategoriList.all.map((kategori) {
                   return DropdownMenuItem<KategoriModel>(
@@ -159,27 +175,8 @@ class FormLaporan extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: 'Pilih lokasi dari peta',
                     prefixIcon: const Icon(Icons.location_on),
-                    enabledBorder: OutlineInputBorder(
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: AppColors.secondary,
-                        width: 2,
-                      ),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: AppColors.secondary,
-                        width: 2,
-                      ),
                     ),
                   ),
                   validator:
@@ -197,12 +194,9 @@ class FormLaporan extends StatelessWidget {
                   size: 42,
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/map-picker').then((
-                    selectedLocationText,
-                  ) {
-                    if (selectedLocationText != null &&
-                        selectedLocationText is String) {
-                      lokasiTextController.text = selectedLocationText;
+                  Navigator.pushNamed(context, '/map-picker').then((result) {
+                    if (result != null && result is String) {
+                      lokasiTextController.text = result;
                     }
                   });
                 },
@@ -217,7 +211,6 @@ class FormLaporan extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // Verifikasi (Jika Ditemukan)
           if (selectedTipe == 'Ditemukan') ...[
             const Text(
               'Pertanyaan Verifikasi',
@@ -253,6 +246,7 @@ class FormLaporan extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 20),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

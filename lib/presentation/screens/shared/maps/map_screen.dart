@@ -124,6 +124,32 @@ class _MapScreenState extends State<MapScreen> {
           );
         },
       ),
+      floatingActionButton: BlocBuilder<MapBloc, MapState>(
+        builder: (context, state) {
+          if (state.pickedAddress == null) return const SizedBox();
+
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FloatingActionButton.extended(
+                heroTag: 'confirm',
+                label: const Text('Pilih Alamat'),
+                onPressed: () => _confirmSelection(state.pickedAddress!),
+              ),
+              const SizedBox(height: 12),
+              FloatingActionButton.extended(
+                heroTag: 'clear',
+                label: const Text('Hapus Alamat'),
+                backgroundColor: Colors.grey[600],
+                onPressed: () {
+                  context.read<MapBloc>().add(ClearPickedLocation());
+                },
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
