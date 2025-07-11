@@ -7,12 +7,14 @@ class MapState extends Equatable {
   final String? currentAddress;
   final bool isLoading;
   final String? error;
+  final LatLng? pickedLatLng;
 
   const MapState({
     this.initialCamera,
     this.pickedMarker,
     this.pickedAddress,
     this.currentAddress,
+    this.pickedLatLng, // ⬅️ Tambah ini
     this.isLoading = false,
     this.error,
   });
@@ -22,6 +24,7 @@ class MapState extends Equatable {
     Marker? pickedMarker,
     String? pickedAddress,
     String? currentAddress,
+    LatLng? pickedLatLng, // ⬅️ Tambah ini
     bool? isLoading,
     String? error,
   }) {
@@ -30,18 +33,20 @@ class MapState extends Equatable {
       pickedMarker: pickedMarker ?? this.pickedMarker,
       pickedAddress: pickedAddress ?? this.pickedAddress,
       currentAddress: currentAddress ?? this.currentAddress,
+      pickedLatLng: pickedLatLng ?? this.pickedLatLng, // ⬅️ Tambah ini
       isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
+      error: error,
     );
   }
 
   @override
   List<Object?> get props => [
-        initialCamera,
-        pickedMarker,
-        pickedAddress,
-        currentAddress,
-        isLoading,
-        error,
-      ];
+    initialCamera,
+    pickedMarker,
+    pickedAddress,
+    currentAddress,
+    pickedLatLng,
+    isLoading,
+    error,
+  ];
 }

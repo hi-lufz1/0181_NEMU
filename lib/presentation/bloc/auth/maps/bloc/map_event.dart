@@ -18,4 +18,14 @@ class PickLocation extends MapEvent {
   List<Object> get props => [latLng];
 }
 
+class SearchLocation extends MapEvent {
+  final String query;
+
+  const SearchLocation(this.query);
+
+  @override
+  List<Object> get props => [query];
+}
+
+
 class ClearPickedLocation extends MapEvent {}

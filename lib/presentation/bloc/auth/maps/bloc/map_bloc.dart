@@ -12,6 +12,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     on<InitializeMap>(_onInitializeMap);
     on<PickLocation>(_onPickLocation);
     on<ClearPickedLocation>(_onClearPickedLocation);
+    on<SearchLocation>(_onSearchLocation);
   }
 
   Future<void> _onInitializeMap(
@@ -21,6 +22,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     try {
       emit(state.copyWith(isLoading: true));
       final position = await _getPermissionAndPosition();
+      
       final placemark = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
@@ -80,8 +82,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             snippet: '${p.street}, ${p.locality}',
           ),
         );
-        address =
-            '${p.name}, ${p.street}, ${p.locality}, ${p.country}';
+        address = _formatAddress(p);
       } catch (_) {
         // reverse geocoding gagal, address tetap default
       }
@@ -105,6 +106,45 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     emit(state.copyWith(pickedMarker: null, pickedAddress: null));
   }
 
+  Future<void> _onSearchLocation(
+    SearchLocation event,
+    Emitter<MapState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(isLoading: true));
+      final results = await locationFromAddress(event.query);
+      if (results.isNotEmpty) {
+        final location = results.first;
+        final latLng = LatLng(location.latitude, location.longitude);
+
+        final addressList = await placemarkFromCoordinates(
+          location.latitude,
+          location.longitude,
+        );
+
+        final address = _formatAddress(addressList.first);
+
+        final marker = Marker(
+          markerId: const MarkerId('picked'),
+          position: latLng,
+        );
+
+        final camera = CameraPosition(target: latLng, zoom: 16);
+        emit(
+          state.copyWith(
+            pickedLatLng: latLng,
+            pickedAddress: address,
+            pickedMarker: marker,
+            initialCamera: camera,
+            isLoading: false,
+          ),
+        );
+      }
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, error: "Gagal mencari lokasi"));
+    }
+  }
+
   Future<Position> _getPermissionAndPosition() async {
     if (!await Geolocator.isLocationServiceEnabled()) {
       throw 'Location services belum aktif.';
@@ -124,3 +164,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     return await Geolocator.getCurrentPosition();
   }
 }
+
+String _formatAddress(Placemark p) {
+  return '${p.name ?? ''}, ${p.street ?? ''}, ${p.locality ?? ''}, ${p.country ?? ''}';
+}
+
