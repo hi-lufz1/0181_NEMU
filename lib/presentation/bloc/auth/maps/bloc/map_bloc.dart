@@ -22,7 +22,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     try {
       emit(state.copyWith(isLoading: true));
       final position = await _getPermissionAndPosition();
-      
+
       final placemark = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
@@ -59,14 +59,14 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     try {
       final latlng = event.latLng;
 
-      // Buat marker tetap muncul meskipun reverse geocoding gagal
+      // Default marker (jika reverse geocoding gagal)
       Marker marker = Marker(
         markerId: const MarkerId('picked'),
         position: latlng,
-        infoWindow: const InfoWindow(title: 'Lokasi dipilih', snippet: ''),
+        infoWindow: const InfoWindow(title: 'Lokasi dipilih'),
       );
 
-      String address = 'Alamat tidak ditemukan';
+      String? address;
 
       try {
         final placemarks = await placemarkFromCoordinates(
@@ -74,23 +74,29 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           latlng.longitude,
         );
         final p = placemarks.first;
+
         marker = Marker(
           markerId: const MarkerId('picked'),
           position: latlng,
           infoWindow: InfoWindow(
             title: p.name?.isNotEmpty == true ? p.name : 'Lokasi dipilih',
-            snippet: '${p.street}, ${p.locality}',
+            snippet: '${p.street ?? ''}, ${p.locality ?? ''}',
           ),
         );
+
         address = _formatAddress(p);
-      } catch (_) {
-        // reverse geocoding gagal, address tetap default
+      } catch (e) {
+        emit(
+          state.copyWith(
+            error: "Gagal mendapatkan alamat dari lokasi tersebut.",
+          ),
+        );
       }
 
       emit(
         state.copyWith(
           pickedMarker: marker,
-          pickedAddress: address,
+          pickedAddress: address, // bisa null
           error: null,
         ),
       );
@@ -103,7 +109,13 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     ClearPickedLocation event,
     Emitter<MapState> emit,
   ) {
-    emit(state.copyWith(pickedMarker: null, pickedAddress: null));
+    emit(
+      state.copyWith(
+        pickedMarker: null,
+        pickedAddress: null,
+        pickedLatLng: null,
+      ),
+    );
   }
 
   Future<void> _onSearchLocation(
@@ -166,6 +178,13 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 }
 
 String _formatAddress(Placemark p) {
-  return '${p.name ?? ''}, ${p.street ?? ''}, ${p.locality ?? ''}, ${p.country ?? ''}';
-}
+  final parts =
+      [
+        p.name,
+        p.street,
+        p.subAdministrativeArea,
+        p.administrativeArea,
+      ].where((e) => e != null && e.trim().isNotEmpty).toList();
 
+  return parts.join(', ');
+}

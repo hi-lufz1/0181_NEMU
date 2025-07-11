@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/presentation/bloc/auth/maps/bloc/map_bloc.dart';
@@ -15,6 +14,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller = Completer();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -29,23 +29,24 @@ class _MapScreenState extends State<MapScreen> {
   void _confirmSelection(String pickedAddress) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Konfirmasi Alamat'),
-        content: Text(pickedAddress),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Konfirmasi Alamat'),
+            content: Text(pickedAddress),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // tutup dialog
+                  Navigator.pop(context, pickedAddress); // kirim ke form
+                },
+                child: const Text('Pilih'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Tutup dialog
-              Navigator.pop(context, pickedAddress); // Kembalikan data ke form
-            },
-            child: const Text('Pilih'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -56,9 +57,9 @@ class _MapScreenState extends State<MapScreen> {
       body: BlocConsumer<MapBloc, MapState>(
         listener: (context, state) {
           if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error!)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.error!)));
           }
         },
         builder: (context, state) {
@@ -70,25 +71,29 @@ class _MapScreenState extends State<MapScreen> {
             children: [
               GoogleMap(
                 initialCameraPosition: state.initialCamera!,
-                onMapCreated: (controller) => _controller.complete(controller),
+                onMapCreated: (controller) {
+                  if (!_controller.isCompleted) {
+                    _controller.complete(controller);
+                  }
+                },
+
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
                 zoomControlsEnabled: true,
-                markers: state.pickedMarker != null
-                    ? {state.pickedMarker!}
-                    : {},
+                markers:
+                    state.pickedMarker != null ? {state.pickedMarker!} : {},
                 onTap: _onMapTap,
               ),
 
-              // Current address
               Positioned(
-                top: 25,
-                left: 50,
+                top: 16,
+                left: 16,
+                right: 16,
                 child: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                     boxShadow: const [
                       BoxShadow(
                         color: Colors.black12,
@@ -97,20 +102,49 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ],
                   ),
-                  child: Text(
-                    state.currentAddress ?? 'Mencari lokasi...',
-                    style: const TextStyle(fontSize: 12),
+                  child: TextFormField(
+                    controller: _searchController,
+                    textInputAction: TextInputAction.search,
+                    onFieldSubmitted: (value) {
+                      if (value.trim().isNotEmpty) {
+                        context.read<MapBloc>().add(SearchLocation(value));
+                      }
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "Cari lokasi...",
+                      border: InputBorder.none,
+                      icon: Icon(Icons.search),
+                    ),
                   ),
                 ),
               ),
-
-              // Picked address preview
+              if (state.currentAddress != null)
+                Positioned(
+                  top: 75,
+                  left: 16,
+                  right: 16,
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        state.currentAddress!,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ),
+                ),
               if (state.pickedAddress != null)
                 Positioned(
                   bottom: 120,
                   left: 16,
                   right: 16,
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Text(
@@ -128,25 +162,30 @@ class _MapScreenState extends State<MapScreen> {
         builder: (context, state) {
           if (state.pickedAddress == null) return const SizedBox();
 
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FloatingActionButton.extended(
-                heroTag: 'confirm',
-                label: const Text('Pilih Alamat'),
-                onPressed: () => _confirmSelection(state.pickedAddress!),
-              ),
-              const SizedBox(height: 12),
-              FloatingActionButton.extended(
-                heroTag: 'clear',
-                label: const Text('Hapus Alamat'),
-                backgroundColor: Colors.grey[600],
-                onPressed: () {
-                  context.read<MapBloc>().add(ClearPickedLocation());
-                },
-              ),
-            ],
+          return Padding(
+            padding: const EdgeInsets.only(right: 40.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  heroTag: 'confirm',
+                  backgroundColor: AppColors.primary,
+                  child: const Icon(Icons.check, color: Colors.white),
+                  onPressed: () => _confirmSelection(state.pickedAddress!),
+                ),
+                const SizedBox(width: 8),
+                FloatingActionButton(
+                  heroTag: 'clear',
+                  backgroundColor: AppColors.secondary,
+                  child: const Icon(Icons.clear, color: Colors.white),
+                  onPressed: () {
+                      context.read<MapBloc>().add(ClearPickedLocation());
+                    _searchController.clear();
+                  },
+                ),
+              ],
+            ),
           );
         },
       ),
