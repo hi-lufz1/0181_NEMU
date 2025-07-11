@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nemu_app/core/components/custom_text_field.dart';
 import 'package:nemu_app/core/constants/colors.dart';
+import 'package:nemu_app/core/constants/kategori_list.dart';
+import 'package:nemu_app/data/model/kategori_model.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'laporan_type_selector.dart';
 import 'image_option_button.dart';
@@ -39,19 +41,6 @@ class FormLaporan extends StatefulWidget {
 }
 
 class _FormLaporanState extends State<FormLaporan> {
-  final List<String> kategoriList = [
-    'Elektronik',
-    'Dompet & Uang',
-    'Identitas & Dokumen',
-    'Perhiasan & Aksesori',
-    'Pakaian',
-    'Tas & Koper',
-    'Kunci',
-    'Kendaraan',
-    'Mainan & Alat Tulis',
-    'Lainnya',
-  ];
-
   @override
   Widget build(BuildContext context) {
     final imageFile = context.watch<FotoLaporanBloc>().state.file;
@@ -119,7 +108,7 @@ class _FormLaporanState extends State<FormLaporan> {
 
           const Text('Kategori', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 6),
-          DropdownButtonFormField<String>(
+          DropdownButtonFormField<KategoriModel>(
             decoration: InputDecoration(
               hintText: 'Pilih Kategori',
               prefixIcon: const Icon(Icons.category),
@@ -127,20 +116,25 @@ class _FormLaporanState extends State<FormLaporan> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            value: widget.selectedKategori,
-            onChanged: widget.onKategoriChanged,
+            value:
+                widget.selectedKategori == null
+                    ? null
+                    : KategoriList.all.firstWhere(
+                      (kat) => kat.nama == widget.selectedKategori,
+                      orElse: () => KategoriList.all.first,
+                    ),
+            onChanged: (value) {
+              widget.onKategoriChanged(value?.nama);
+            },
             items:
-                kategoriList.map((kategori) {
-                  return DropdownMenuItem<String>(
+                KategoriList.all.map((kategori) {
+                  return DropdownMenuItem<KategoriModel>(
                     value: kategori,
-                    child: Text(kategori),
+                    child: Text(kategori.nama),
                   );
                 }).toList(),
             validator:
-                (value) =>
-                    value == null || value.isEmpty
-                        ? 'Kategori harus dipilih'
-                        : null,
+                (value) => value == null ? 'Kategori harus dipilih' : null,
           ),
 
           const SizedBox(height: 12),

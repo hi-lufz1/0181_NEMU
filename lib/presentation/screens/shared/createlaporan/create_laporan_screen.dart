@@ -92,10 +92,12 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      final fotoFile = context.read<FotoLaporanBloc>().state.file;
-                      final base64Foto = fotoFile != null
-                          ? base64Encode(await fotoFile.readAsBytes())
-                          : null;
+                      final fotoFile =
+                          context.read<FotoLaporanBloc>().state.file;
+                      final base64Foto =
+                          fotoFile != null
+                              ? base64Encode(await fotoFile.readAsBytes())
+                              : null;
 
                       final laporan = AddLaporanReqModel(
                         tipe: tipe,
@@ -104,7 +106,9 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                         kategori: selectedKategori ?? '',
                         lokasiText: lokasiTextController.text,
                         pertanyaanVerifikasi:
-                            tipe == 'Ditemukan' ? pertanyaanController.text : null,
+                            tipe == 'Ditemukan'
+                                ? pertanyaanController.text
+                                : null,
                         jawabanVerifikasi:
                             tipe == 'Ditemukan' ? jawabanController.text : null,
                         foto: base64Foto,
