@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/model/laporan_draf_model.dart';
 import 'package:nemu_app/data/model/request/shared/add_laporan_req_model.dart';
+import 'package:nemu_app/presentation/bloc/auth/maps/bloc/map_bloc.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/add/add_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/draf/draf_bloc.dart';
@@ -97,6 +98,9 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                         );
                         return;
                       }
+                      final pickedLatLng =
+                          context.read<MapBloc>().state.pickedLatLng;
+
                       final draf = LaporanDrafModel(
                         namaBarang: namaBarangController.text,
                         deskripsi: deskripsiController.text,
@@ -106,6 +110,8 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                         pertanyaanVerifikasi: pertanyaanController.text,
                         jawabanVerifikasi: jawabanController.text,
                         foto: foto?.path,
+                        latitude: pickedLatLng?.latitude,
+                        longitude: pickedLatLng?.longitude,
                       );
 
                       context.read<DrafBloc>().add(AddDrafEvent(draf));
@@ -141,6 +147,15 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () async {
+                      if (tipe == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Pilih tipe laporan terlebih dahulu"),
+                          ),
+                        );
+                        return;
+                      }
+
                       if (_formKey.currentState!.validate()) {
                         final fotoFile =
                             context.read<FotoLaporanBloc>().state.file;
@@ -148,6 +163,8 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                             fotoFile != null
                                 ? base64Encode(await fotoFile.readAsBytes())
                                 : null;
+                        final pickedLatLng =
+                            context.read<MapBloc>().state.pickedLatLng;
 
                         final laporan = AddLaporanReqModel(
                           tipe: tipe,
@@ -155,6 +172,8 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                           deskripsi: deskripsiController.text,
                           kategori: selectedKategori ?? '',
                           lokasiText: lokasiTextController.text,
+                          latitude: pickedLatLng?.latitude,
+                          longitude: pickedLatLng?.longitude,
                           pertanyaanVerifikasi:
                               tipe == 'Ditemukan'
                                   ? pertanyaanController.text

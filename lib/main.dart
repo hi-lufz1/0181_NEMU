@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
                   laporanRepository: context.read<LaporanRepository>(),
                 ),
           ),
+          BlocProvider<MapBloc>(create: (context) => MapBloc()),
         ],
         child: MaterialApp(
           title: 'NEMU App',
@@ -60,11 +61,7 @@ class MyApp extends StatelessWidget {
             '/register': (context) => const RegisterScreen(),
             '/create-laporan': (context) => const CreateLaporanScreen(),
             '/feed': (context) => const FeedScreen(),
-            '/map-picker':
-                (context) => BlocProvider(
-                  create: (_) => MapBloc(),
-                  child: const MapScreen(),
-                ),
+            '/map-picker': (context) => const MapScreen(),
           },
         ),
       ),
