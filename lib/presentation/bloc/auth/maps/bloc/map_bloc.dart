@@ -54,32 +54,45 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     PickLocation event,
     Emitter<MapState> emit,
   ) async {
+    final latlng = event.latLng;
+
+    Marker marker = Marker(
+      markerId: const MarkerId('picked'),
+      position: latlng,
+      infoWindow: const InfoWindow(title: 'Lokasi dipilih', snippet: ''),
+    );
+
+    String address = 'Alamat tidak ditemukan';
+
     try {
       final placemarks = await placemarkFromCoordinates(
-        event.latLng.latitude,
-        event.latLng.longitude,
-      );
+        latlng.latitude,
+        latlng.longitude,
+      ).timeout(const Duration(seconds: 3)); // ⏰ Tambahkan timeout
+
       final p = placemarks.first;
-      final marker = Marker(
+      marker = Marker(
         markerId: const MarkerId('picked'),
-        position: event.latLng,
+        position: latlng,
         infoWindow: InfoWindow(
           title: p.name?.isNotEmpty == true ? p.name : 'Lokasi dipilih',
           snippet: '${p.street}, ${p.locality}',
         ),
       );
-      final address =
+      address =
           '${p.name}, ${p.street}, ${p.locality}, ${p.country}, ${p.postalCode}';
+    } catch (e) {
+      address = 'Alamat tidak ditemukan';
       emit(
         state.copyWith(
-          pickedMarker: marker,
-          pickedAddress: address,
-          error: null,
+          error: 'Gagal mengambil alamat. Silakan coba lokasi lain.',
         ),
       );
-    } catch (e) {
-      emit(state.copyWith(error: e.toString()));
     }
+
+    emit(
+      state.copyWith(pickedMarker: marker, pickedAddress: address, error: null),
+    );
   }
 
   void _onClearPickedLocation(

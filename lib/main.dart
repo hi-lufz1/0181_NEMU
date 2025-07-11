@@ -5,6 +5,7 @@ import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
+import 'package:nemu_app/presentation/bloc/auth/maps/bloc/map_bloc.dart';
 import 'package:nemu_app/presentation/bloc/auth/register/register_bloc.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/add/add_laporan_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
+import 'package:nemu_app/presentation/screens/shared/maps/map_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +60,11 @@ class MyApp extends StatelessWidget {
             '/register': (context) => const RegisterScreen(),
             '/create-laporan': (context) => const CreateLaporanScreen(),
             '/feed': (context) => const FeedScreen(),
+            '/map-picker':
+                (context) => BlocProvider(
+                  create: (_) => MapBloc(),
+                  child: const MapScreen(),
+                ),
           },
         ),
       ),
