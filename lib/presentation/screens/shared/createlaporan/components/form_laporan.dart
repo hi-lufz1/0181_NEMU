@@ -10,7 +10,7 @@ import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'laporan_type_selector.dart';
 import 'image_option_button.dart';
 
-class FormLaporan extends StatefulWidget {
+class FormLaporan extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController namaBarangController;
   final TextEditingController deskripsiController;
@@ -37,19 +37,15 @@ class FormLaporan extends StatefulWidget {
   });
 
   @override
-  State<FormLaporan> createState() => _FormLaporanState();
-}
-
-class _FormLaporanState extends State<FormLaporan> {
-  @override
   Widget build(BuildContext context) {
     final imageFile = context.watch<FotoLaporanBloc>().state.file;
 
     return Form(
-      key: widget.formKey,
+      key: formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ✅ Preview Foto
           if (imageFile != null) ...[
             Stack(
               children: [
@@ -86,10 +82,16 @@ class _FormLaporanState extends State<FormLaporan> {
             'Nama Barang',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 6),
           CustomTextField(
             hintText: 'Nama Barang',
             icon: Icons.label_outline,
-            controller: widget.namaBarangController,
+            controller: namaBarangController,
+            validator:
+                (value) =>
+                    value == null || value.isEmpty
+                        ? 'Nama barang harus diisi'
+                        : null,
           ),
           const SizedBox(height: 12),
 
@@ -101,8 +103,13 @@ class _FormLaporanState extends State<FormLaporan> {
           CustomTextField(
             hintText: 'Deskripsi',
             icon: Icons.description,
-            controller: widget.deskripsiController,
+            controller: deskripsiController,
             keyboardType: TextInputType.multiline,
+            validator:
+                (value) =>
+                    value == null || value.isEmpty
+                        ? 'Deskripsi harus diisi'
+                        : null,
           ),
           const SizedBox(height: 12),
 
@@ -117,14 +124,14 @@ class _FormLaporanState extends State<FormLaporan> {
               ),
             ),
             value:
-                widget.selectedKategori == null
+                selectedKategori == null
                     ? null
                     : KategoriList.all.firstWhere(
-                      (kat) => kat.nama == widget.selectedKategori,
+                      (kat) => kat.nama == selectedKategori,
                       orElse: () => KategoriList.all.first,
                     ),
             onChanged: (value) {
-              widget.onKategoriChanged(value?.nama);
+              onKategoriChanged(value?.nama);
             },
             items:
                 KategoriList.all.map((kategori) {
@@ -136,8 +143,8 @@ class _FormLaporanState extends State<FormLaporan> {
             validator:
                 (value) => value == null ? 'Kategori harus dipilih' : null,
           ),
-
           const SizedBox(height: 12),
+
           const Text(
             'Lokasi Kehilangan / Penemuan',
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -146,8 +153,8 @@ class _FormLaporanState extends State<FormLaporan> {
           Row(
             children: [
               Expanded(
-                child: TextField(
-                  controller: widget.lokasiTextController,
+                child: TextFormField(
+                  controller: lokasiTextController,
                   readOnly: true,
                   decoration: InputDecoration(
                     hintText: 'Pilih lokasi dari peta',
@@ -163,7 +170,23 @@ class _FormLaporanState extends State<FormLaporan> {
                         width: 2,
                       ),
                     ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.red),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: AppColors.secondary,
+                        width: 2,
+                      ),
+                    ),
                   ),
+                  validator:
+                      (value) =>
+                          value == null || value.isEmpty
+                              ? 'Lokasi harus dipilih'
+                              : null,
                 ),
               ),
               const SizedBox(width: 8),
@@ -179,22 +202,23 @@ class _FormLaporanState extends State<FormLaporan> {
                   ) {
                     if (selectedLocationText != null &&
                         selectedLocationText is String) {
-                      widget.lokasiTextController.text = selectedLocationText;
+                      lokasiTextController.text = selectedLocationText;
                     }
                   });
                 },
               ),
             ],
           ),
-
           const SizedBox(height: 12),
+
           LaporanTypeSelector(
-            selectedType: widget.selectedTipe,
-            onSelected: widget.onTipeChanged,
+            selectedType: selectedTipe,
+            onSelected: onTipeChanged,
           ),
-
           const SizedBox(height: 12),
-          if (widget.selectedTipe == 'Ditemukan') ...[
+
+          // Verifikasi (Jika Ditemukan)
+          if (selectedTipe == 'Ditemukan') ...[
             const Text(
               'Pertanyaan Verifikasi',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -203,7 +227,13 @@ class _FormLaporanState extends State<FormLaporan> {
             CustomTextField(
               hintText: 'Pertanyaan Verifikasi',
               icon: Icons.question_answer,
-              controller: widget.pertanyaanController,
+              controller: pertanyaanController,
+              validator:
+                  (value) =>
+                      selectedTipe == 'Ditemukan' &&
+                              (value == null || value.isEmpty)
+                          ? 'Pertanyaan wajib diisi'
+                          : null,
             ),
             const SizedBox(height: 12),
             const Text(
@@ -213,7 +243,13 @@ class _FormLaporanState extends State<FormLaporan> {
             CustomTextField(
               hintText: 'Jawaban Verifikasi',
               icon: Icons.lock_outline,
-              controller: widget.jawabanController,
+              controller: jawabanController,
+              validator:
+                  (value) =>
+                      selectedTipe == 'Ditemukan' &&
+                              (value == null || value.isEmpty)
+                          ? 'Jawaban wajib diisi'
+                          : null,
             ),
           ],
           const SizedBox(height: 20),

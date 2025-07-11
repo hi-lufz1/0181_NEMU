@@ -57,6 +57,7 @@ class MyApp extends StatelessWidget {
           routes: {
             '/register': (context) => const RegisterScreen(),
             '/create-laporan': (context) => const CreateLaporanScreen(),
+            '/feed': (context) => const FeedScreen(),
           },
         ),
       ),
