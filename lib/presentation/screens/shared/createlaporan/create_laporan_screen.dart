@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nemu_app/core/constants/colors.dart';
+import 'package:nemu_app/data/model/laporan_draf_model.dart';
 import 'package:nemu_app/data/model/request/shared/add_laporan_req_model.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/add/add_laporan_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/draf/draf_bloc.dart';
 import 'components/form_laporan.dart';
 
 class CreateLaporanScreen extends StatefulWidget {
@@ -48,7 +50,9 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
           Navigator.pushNamedAndRemoveUntil(context, '/feed', (_) => false);
         } else if (state is AddLaporanFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.resModel.message ?? 'Gagal mengirim laporan'))
+            SnackBar(
+              content: Text(state.resModel.message ?? 'Gagal mengirim laporan'),
+            ),
           );
         }
       },
@@ -78,7 +82,37 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      // TODO: Simpan ke sqflite
+                      final foto = context.read<FotoLaporanBloc>().state.file;
+                      // minimal input
+                      if (namaBarangController.text.isEmpty &&
+                          deskripsiController.text.isEmpty &&
+                          lokasiTextController.text.isEmpty &&
+                          (foto == null)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Isi minimal satu data sebelum simpan draf",
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+                      final draf = LaporanDrafModel(
+                        namaBarang: namaBarangController.text,
+                        deskripsi: deskripsiController.text,
+                        lokasiText: lokasiTextController.text,
+                        tipe: tipe ?? '',
+                        kategori: selectedKategori ?? '',
+                        pertanyaanVerifikasi: pertanyaanController.text,
+                        jawabanVerifikasi: jawabanController.text,
+                        foto: foto?.path,
+                      );
+
+                      context.read<DrafBloc>().add(AddDrafEvent(draf));
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Disimpan ke draf")),
+                      );
                     },
                     icon: const Icon(Icons.save, color: AppColors.primary),
                     label: const Text(
@@ -91,7 +125,10 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                     ),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
-                      side: const BorderSide(color: AppColors.primary, width: 2),
+                      side: const BorderSide(
+                        color: AppColors.primary,
+                        width: 2,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -107,9 +144,10 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                       if (_formKey.currentState!.validate()) {
                         final fotoFile =
                             context.read<FotoLaporanBloc>().state.file;
-                        final base64Foto = fotoFile != null
-                            ? base64Encode(await fotoFile.readAsBytes())
-                            : null;
+                        final base64Foto =
+                            fotoFile != null
+                                ? base64Encode(await fotoFile.readAsBytes())
+                                : null;
 
                         final laporan = AddLaporanReqModel(
                           tipe: tipe,
@@ -117,18 +155,20 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                           deskripsi: deskripsiController.text,
                           kategori: selectedKategori ?? '',
                           lokasiText: lokasiTextController.text,
-                          pertanyaanVerifikasi: tipe == 'Ditemukan'
-                              ? pertanyaanController.text
-                              : null,
-                          jawabanVerifikasi: tipe == 'Ditemukan'
-                              ? jawabanController.text
-                              : null,
+                          pertanyaanVerifikasi:
+                              tipe == 'Ditemukan'
+                                  ? pertanyaanController.text
+                                  : null,
+                          jawabanVerifikasi:
+                              tipe == 'Ditemukan'
+                                  ? jawabanController.text
+                                  : null,
                           foto: base64Foto,
                         );
 
-                        context
-                            .read<AddLaporanBloc>()
-                            .add(AddLaporanSubmitted(reqModel: laporan));
+                        context.read<AddLaporanBloc>().add(
+                          AddLaporanSubmitted(reqModel: laporan),
+                        );
                       }
                     },
                     icon: const Icon(Icons.send, color: Colors.white),
