@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/presentation/bloc/auth/maps/bloc/map_bloc.dart';
+import 'package:nemu_app/presentation/screens/shared/maps/components/confirm_location_dialog.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -30,22 +31,12 @@ class _MapScreenState extends State<MapScreen> {
     showDialog(
       context: context,
       builder:
-          (_) => AlertDialog(
-            title: const Text('Konfirmasi Alamat'),
-            content: Text(pickedAddress),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Batal'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // tutup dialog
-                  Navigator.pop(context, pickedAddress); // kirim ke form
-                },
-                child: const Text('Pilih'),
-              ),
-            ],
+          (_) => ConfirmLocationDialog(
+            address: pickedAddress,
+            onConfirm: () {
+              Navigator.pop(context); // Tutup dialo
+              Navigator.pop(context, pickedAddress); // kirim ke form
+            },
           ),
     );
   }
@@ -76,10 +67,10 @@ class _MapScreenState extends State<MapScreen> {
                     _controller.complete(controller);
                   }
                 },
-
                 myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                zoomControlsEnabled: true,
+                myLocationButtonEnabled: false,
+                zoomGesturesEnabled: true,
+                zoomControlsEnabled: false,
                 markers:
                     state.pickedMarker != null ? {state.pickedMarker!} : {},
                 onTap: _onMapTap,
@@ -118,6 +109,7 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
               ),
+
               if (state.currentAddress != null)
                 Positioned(
                   top: 75,
@@ -136,6 +128,7 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ),
                 ),
+
               if (state.pickedAddress != null)
                 Positioned(
                   bottom: 120,
@@ -158,34 +151,32 @@ class _MapScreenState extends State<MapScreen> {
           );
         },
       ),
+
       floatingActionButton: BlocBuilder<MapBloc, MapState>(
         builder: (context, state) {
           if (state.pickedAddress == null) return const SizedBox();
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 40.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                  heroTag: 'confirm',
-                  backgroundColor: AppColors.primary,
-                  child: const Icon(Icons.check, color: Colors.white),
-                  onPressed: () => _confirmSelection(state.pickedAddress!),
-                ),
-                const SizedBox(width: 8),
-                FloatingActionButton(
-                  heroTag: 'clear',
-                  backgroundColor: AppColors.secondary,
-                  child: const Icon(Icons.clear, color: Colors.white),
-                  onPressed: () {
-                      context.read<MapBloc>().add(ClearPickedLocation());
-                    _searchController.clear();
-                  },
-                ),
-              ],
-            ),
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                heroTag: 'confirm',
+                backgroundColor: AppColors.primary,
+                child: const Icon(Icons.check, color: Colors.white),
+                onPressed: () => _confirmSelection(state.pickedAddress!),
+              ),
+              const SizedBox(width: 8),
+              FloatingActionButton(
+                heroTag: 'clear',
+                backgroundColor: AppColors.secondary,
+                child: const Icon(Icons.clear, color: Colors.white),
+                onPressed: () {
+                  context.read<MapBloc>().add(ClearPickedLocation());
+                  _searchController.clear();
+                },
+              ),
+            ],
           );
         },
       ),
