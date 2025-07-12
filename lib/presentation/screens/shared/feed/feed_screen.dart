@@ -5,6 +5,7 @@ import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/model/response/shared/getall_res_model.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
+import 'package:nemu_app/presentation/screens/shared/feed/components/fab_expand_button.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/components/feed_post_card.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/components/feed_toggle_tab.dart';
 import 'components/feed_header.dart';
@@ -19,6 +20,14 @@ class FeedScreen extends StatefulWidget {
 class _FeedScreenState extends State<FeedScreen> {
   int selectedIndex = 0; // Untuk tab "Semua" atau "Laporan Saya"
   int currentNavIndex = 0; // Untuk bottom navbar
+  bool isFabOpen = false;
+  final GlobalKey<ExpandableFabState> _fabKey = GlobalKey<ExpandableFabState>();
+
+  void _handleFabToggle(bool isOpen) {
+    setState(() {
+      isFabOpen = isOpen;
+    });
+  }
 
   @override
   void initState() {
@@ -70,7 +79,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     decoration: const BoxDecoration(
                       gradient: RadialGradient(
                         center: Alignment.topCenter,
-                        radius: 1.5,
+                        radius: 2,
                         colors: [
                           Color.fromARGB(255, 163, 242, 234),
                           Colors.white,
@@ -186,6 +195,17 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
               ),
             ),
+            if (isFabOpen)
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: () {
+                    _handleFabToggle(false); // update state eksternal
+                    _fabKey.currentState
+                        ?.closeFab(); // perintahkan ExpandableFab untuk tutup
+                  },
+                  child: Container(color: Colors.black54),
+                ),
+              ),
 
             // Floating Bottom Navbar
             CustomBottomNavbar(
@@ -196,14 +216,16 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
 
         // Floating Action Button
-        floatingActionButton: FloatingActionButton(
-          shape: const CircleBorder(),
-          backgroundColor: AppColors.primary,
-          onPressed: () {
+        floatingActionButton: ExpandableFab(
+          key: _fabKey,
+          onCreateReport: () {
             context.read<FotoLaporanBloc>().add(ClearSelectedFoto());
             Navigator.pushNamed(context, '/create-laporan');
           },
-          child: const Icon(Icons.add),
+          onOpenDraft: () {
+            Navigator.pushNamed(context, '/draft');
+          },
+          onToggle: _handleFabToggle,
         ),
       ),
     );

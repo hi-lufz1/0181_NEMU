@@ -18,7 +18,7 @@ class CustomBottomNavbar extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.75,
+          width: MediaQuery.of(context).size.width * 0.70,
           height: 60,
           padding: const EdgeInsets.symmetric(horizontal: 24),
           decoration: BoxDecoration(
