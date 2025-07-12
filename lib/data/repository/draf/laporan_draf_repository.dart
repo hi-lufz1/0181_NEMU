@@ -29,6 +29,11 @@ class LaporanDrafRepository {
     await dao.delete(id);
   }
 
+  // Update draf yang sudah ada
+  Future<void> updateDraf(LaporanDrafModel model) async {
+    await dao.update(model);
+  }
+
   // Hapus semua draf
   Future<void> hapusSemuaDraf() async {
     await dao.deleteAll();

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/model/laporan_draf_model.dart';
-import 'package:nemu_app/data/model/request/shared/add_laporan_req_model.dart';
-import 'package:nemu_app/presentation/bloc/auth/maps/bloc/map_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/cubit/form_laporan_cubit.dart';
+import 'package:nemu_app/presentation/bloc/maps/bloc/map_bloc.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/add/add_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/draf/draf_bloc.dart';
@@ -20,34 +20,53 @@ class CreateLaporanScreen extends StatefulWidget {
 
 class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  final namaBarangController = TextEditingController();
-  final deskripsiController = TextEditingController();
-  final lokasiTextController = TextEditingController();
-  final pertanyaanController = TextEditingController();
-  final jawabanController = TextEditingController();
-
-  String? tipe;
-  String? selectedKategori;
+  bool isLoaded = false;
 
   @override
-  void dispose() {
-    namaBarangController.dispose();
-    deskripsiController.dispose();
-    lokasiTextController.dispose();
-    pertanyaanController.dispose();
-    jawabanController.dispose();
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!isLoaded) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is LaporanDrafModel) {
+        final formCubit = context.read<FormLaporanCubit>();
+        formCubit.setFromDraft(args);
+        formCubit.setDraftId(args.id);
+
+        if (args.latitude != null && args.longitude != null) {
+          context.read<MapBloc>().add(
+            SetPickedLatLng(
+              latitude: args.latitude!,
+              longitude: args.longitude!,
+            ),
+          );
+        }
+
+        if (args.foto != null) {
+          context.read<FotoLaporanBloc>().add(LoadFotoFromPath(args.foto!));
+        }
+
+        isLoaded = true;
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("CreateLaporanScreen dibuild ulang");
+
+    final formCubit = context.read<FormLaporanCubit>();
+    final foto = context.watch<FotoLaporanBloc>().state.file;
+    final pickedLatLng = context.watch<MapBloc>().state.pickedLatLng;
+
     return BlocListener<AddLaporanBloc, AddLaporanState>(
       listener: (context, state) {
         if (state is AddLaporanSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.resModel.message ?? 'Berhasil')),
           );
+          formCubit.clear();
+          context.read<FotoLaporanBloc>().add(ClearSelectedFoto());
           Navigator.pushNamedAndRemoveUntil(context, '/feed', (_) => false);
         } else if (state is AddLaporanFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -61,18 +80,7 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
         appBar: AppBar(title: const Text('Buat Laporan')),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: FormLaporan(
-            formKey: _formKey,
-            namaBarangController: namaBarangController,
-            deskripsiController: deskripsiController,
-            lokasiTextController: lokasiTextController,
-            pertanyaanController: pertanyaanController,
-            jawabanController: jawabanController,
-            selectedTipe: tipe,
-            selectedKategori: selectedKategori,
-            onTipeChanged: (val) => setState(() => tipe = val),
-            onKategoriChanged: (val) => setState(() => selectedKategori = val),
-          ),
+          child: FormLaporan(formKey: _formKey),
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(
@@ -83,12 +91,11 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      final foto = context.read<FotoLaporanBloc>().state.file;
-                      // minimal input
-                      if (namaBarangController.text.isEmpty &&
-                          deskripsiController.text.isEmpty &&
-                          lokasiTextController.text.isEmpty &&
-                          (foto == null)) {
+                      final form = formCubit.state;
+                      if (form.namaBarang.isEmpty &&
+                          form.deskripsi.isEmpty &&
+                          form.lokasiText.isEmpty &&
+                          foto == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
@@ -98,27 +105,32 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                         );
                         return;
                       }
-                      final pickedLatLng =
-                          context.read<MapBloc>().state.pickedLatLng;
 
                       final draf = LaporanDrafModel(
-                        namaBarang: namaBarangController.text,
-                        deskripsi: deskripsiController.text,
-                        lokasiText: lokasiTextController.text,
-                        tipe: tipe ?? '',
-                        kategori: selectedKategori ?? '',
-                        pertanyaanVerifikasi: pertanyaanController.text,
-                        jawabanVerifikasi: jawabanController.text,
+                        id: formCubit.draftId,
+                        namaBarang: form.namaBarang,
+                        deskripsi: form.deskripsi,
+                        lokasiText: form.lokasiText,
+                        tipe: form.tipe ?? '',
+                        kategori: form.kategori ?? '',
+                        pertanyaanVerifikasi: form.pertanyaanVerifikasi,
+                        jawabanVerifikasi: form.jawabanVerifikasi,
                         foto: foto?.path,
                         latitude: pickedLatLng?.latitude,
                         longitude: pickedLatLng?.longitude,
                       );
 
-                      context.read<DrafBloc>().add(AddDrafEvent(draf));
+                      if (formCubit.draftId != null) {
+                        context.read<DrafBloc>().add(UpdateDrafEvent(draf));
+                      } else {
+                        context.read<DrafBloc>().add(AddDrafEvent(draf));
+                      }
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Disimpan ke draf")),
                       );
+                      formCubit.clear();
+                      Navigator.pushReplacementNamed(context, '/draft');
                     },
                     icon: const Icon(Icons.save, color: AppColors.primary),
                     label: const Text(
@@ -142,12 +154,11 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
-
-                // Tombol Kirim Laporan
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      if (tipe == null) {
+                      final form = formCubit.state;
+                      if (form.tipe == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text("Pilih tipe laporan terlebih dahulu"),
@@ -157,32 +168,15 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                       }
 
                       if (_formKey.currentState!.validate()) {
-                        final fotoFile =
-                            context.read<FotoLaporanBloc>().state.file;
                         final base64Foto =
-                            fotoFile != null
-                                ? base64Encode(await fotoFile.readAsBytes())
+                            foto != null
+                                ? base64Encode(await foto.readAsBytes())
                                 : null;
-                        final pickedLatLng =
-                            context.read<MapBloc>().state.pickedLatLng;
 
-                        final laporan = AddLaporanReqModel(
-                          tipe: tipe,
-                          namaBarang: namaBarangController.text,
-                          deskripsi: deskripsiController.text,
-                          kategori: selectedKategori ?? '',
-                          lokasiText: lokasiTextController.text,
+                        final laporan = formCubit.toRequestModel(
+                          base64Foto: base64Foto,
                           latitude: pickedLatLng?.latitude,
                           longitude: pickedLatLng?.longitude,
-                          pertanyaanVerifikasi:
-                              tipe == 'Ditemukan'
-                                  ? pertanyaanController.text
-                                  : null,
-                          jawabanVerifikasi:
-                              tipe == 'Ditemukan'
-                                  ? jawabanController.text
-                                  : null,
-                          foto: base64Foto,
                         );
 
                         context.read<AddLaporanBloc>().add(

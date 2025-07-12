@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart'; // Tambahkan ini
 import 'package:nemu_app/core/constants/colors.dart';
+import 'package:nemu_app/data/datasource/draf_dao.dart';
 import 'package:nemu_app/data/repository/auth/auth_repository.dart';
+import 'package:nemu_app/data/repository/draf/laporan_draf_repository.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
-import 'package:nemu_app/presentation/bloc/auth/maps/bloc/map_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/cubit/form_laporan_cubit.dart';
+import 'package:nemu_app/presentation/bloc/maps/bloc/map_bloc.dart';
 import 'package:nemu_app/presentation/bloc/auth/register/register_bloc.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/add/add_laporan_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/draf/draf_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan_screen.dart';
+import 'package:nemu_app/presentation/screens/shared/draf/draf_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/maps/map_screen.dart';
 
@@ -52,6 +57,12 @@ class MyApp extends StatelessWidget {
                 ),
           ),
           BlocProvider<MapBloc>(create: (context) => MapBloc()),
+          BlocProvider(
+            create:
+                (_) =>
+                    DrafBloc(repository: LaporanDrafRepository(dao: DrafDao())),
+          ),
+          BlocProvider<FormLaporanCubit>(create: (_) => FormLaporanCubit()),
         ],
         child: MaterialApp(
           title: 'NEMU App',
@@ -59,9 +70,10 @@ class MyApp extends StatelessWidget {
           home: const LoginScreen(),
           routes: {
             '/register': (context) => const RegisterScreen(),
-            '/create-laporan': (context) => const CreateLaporanScreen(),
+            '/create-laporan': (context) => CreateLaporanScreen(),
             '/feed': (context) => const FeedScreen(),
             '/map-picker': (context) => const MapScreen(),
+            '/draft': (context) => const DraftLaporanScreen(),
           },
         ),
       ),

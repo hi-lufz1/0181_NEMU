@@ -27,5 +27,15 @@ class SearchLocation extends MapEvent {
   List<Object> get props => [query];
 }
 
+class SetPickedLatLng extends MapEvent {
+  final double latitude;
+  final double longitude;
+
+  const SetPickedLatLng({required this.latitude, required this.longitude});
+
+  @override
+  List<Object> get props => [latitude, longitude];
+}
+
 
 class ClearPickedLocation extends MapEvent {}

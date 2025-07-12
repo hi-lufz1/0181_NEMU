@@ -15,6 +15,7 @@ class DrafBloc extends Bloc<DrafEvent, DrafState> {
     on<DeleteDrafEvent>(_onDelete);
     on<DeleteAllDrafEvent>(_onDeleteAll);
     on<GetDrafByIdEvent>(_onGetById);
+    on<UpdateDrafEvent>(_onUpdate);
   }
 
   Future<void> _onLoadAll(
@@ -62,6 +63,15 @@ class DrafBloc extends Bloc<DrafEvent, DrafState> {
       add(LoadAllDrafEvent());
     } catch (e) {
       emit(DrafError("Gagal menghapus draf"));
+    }
+  }
+
+  Future<void> _onUpdate(UpdateDrafEvent event, Emitter<DrafState> emit) async {
+    try {
+      await repository.updateDraf(event.draf);
+      add(LoadAllDrafEvent());
+    } catch (e) {
+      emit(DrafError("Gagal mengupdate draf"));
     }
   }
 

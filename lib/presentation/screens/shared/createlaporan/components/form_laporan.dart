@@ -8,34 +8,14 @@ import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/core/constants/kategori_list.dart';
 import 'package:nemu_app/data/model/kategori_model.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/cubit/form_laporan_cubit.dart';
 import 'laporan_type_selector.dart';
 import 'image_option_button.dart';
 
 class FormLaporan extends StatelessWidget {
   final GlobalKey<FormState> formKey;
-  final TextEditingController namaBarangController;
-  final TextEditingController deskripsiController;
-  final TextEditingController lokasiTextController;
-  final TextEditingController pertanyaanController;
-  final TextEditingController jawabanController;
-  final Function(String?) onTipeChanged;
-  final Function(String?) onKategoriChanged;
-  final String? selectedTipe;
-  final String? selectedKategori;
 
-  const FormLaporan({
-    super.key,
-    required this.formKey,
-    required this.namaBarangController,
-    required this.deskripsiController,
-    required this.lokasiTextController,
-    required this.pertanyaanController,
-    required this.jawabanController,
-    required this.onTipeChanged,
-    required this.onKategoriChanged,
-    required this.selectedTipe,
-    required this.selectedKategori,
-  });
+  const FormLaporan({super.key, required this.formKey});
 
   void _showImagePopup(BuildContext context, File imageFile) {
     showDialog(
@@ -47,6 +27,8 @@ class FormLaporan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageFile = context.watch<FotoLaporanBloc>().state.file;
+    final state = context.watch<FormLaporanCubit>().state;
+    final cubit = context.read<FormLaporanCubit>();
 
     return Form(
       key: formKey,
@@ -96,7 +78,8 @@ class FormLaporan extends StatelessWidget {
           CustomTextField(
             hintText: 'Nama Barang',
             icon: Icons.label_outline,
-            controller: namaBarangController,
+            initialValue: state.namaBarang,
+            onChanged: cubit.setNamaBarang,
             validator:
                 (value) =>
                     value == null || value.isEmpty
@@ -113,8 +96,9 @@ class FormLaporan extends StatelessWidget {
           CustomTextField(
             hintText: 'Deskripsi',
             icon: Icons.description,
-            controller: deskripsiController,
+            initialValue: state.deskripsi,
             keyboardType: TextInputType.multiline,
+            onChanged: cubit.setDeskripsi,
             validator:
                 (value) =>
                     value == null || value.isEmpty
@@ -136,28 +120,25 @@ class FormLaporan extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: AppColors.secondary, width: 2),
               ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.secondary, width: 2),
-              ),
             ),
             value:
-                selectedKategori == null
+                state.kategori == null
                     ? null
                     : KategoriList.all.firstWhere(
-                      (kat) => kat.nama == selectedKategori,
+                      (kat) => kat.nama == state.kategori,
                       orElse: () => KategoriList.all.first,
                     ),
-            onChanged: (value) => onKategoriChanged(value?.nama),
+            onChanged: (val) => cubit.setKategori(val?.nama),
             items:
-                KategoriList.all.map((kategori) {
-                  return DropdownMenuItem<KategoriModel>(
-                    value: kategori,
-                    child: Text(kategori.nama),
-                  );
-                }).toList(),
-            validator:
-                (value) => value == null ? 'Kategori harus dipilih' : null,
+                KategoriList.all
+                    .map(
+                      (kategori) => DropdownMenuItem(
+                        value: kategori,
+                        child: Text(kategori.nama),
+                      ),
+                    )
+                    .toList(),
+            validator: (val) => val == null ? 'Kategori harus dipilih' : null,
           ),
           const SizedBox(height: 12),
 
@@ -170,8 +151,8 @@ class FormLaporan extends StatelessWidget {
             children: [
               Expanded(
                 child: TextFormField(
-                  controller: lokasiTextController,
                   readOnly: true,
+                  controller: TextEditingController(text: state.lokasiText),
                   decoration: InputDecoration(
                     hintText: 'Pilih lokasi dari peta',
                     prefixIcon: const Icon(Icons.location_on),
@@ -179,9 +160,16 @@ class FormLaporan extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/map-picker').then((result) {
+                      if (result != null && result is String) {
+                        cubit.setLokasiText(result);
+                      }
+                    });
+                  },
                   validator:
-                      (value) =>
-                          value == null || value.isEmpty
+                      (val) =>
+                          val == null || val.isEmpty
                               ? 'Lokasi harus dipilih'
                               : null,
                 ),
@@ -196,7 +184,7 @@ class FormLaporan extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamed(context, '/map-picker').then((result) {
                     if (result != null && result is String) {
-                      lokasiTextController.text = result;
+                      cubit.setLokasiText(result);
                     }
                   });
                 },
@@ -206,12 +194,12 @@ class FormLaporan extends StatelessWidget {
           const SizedBox(height: 12),
 
           LaporanTypeSelector(
-            selectedType: selectedTipe,
-            onSelected: onTipeChanged,
+            selectedType: state.tipe,
+            onSelected: cubit.setTipe,
           ),
           const SizedBox(height: 12),
 
-          if (selectedTipe == 'Ditemukan') ...[
+          if (state.tipe == 'Ditemukan') ...[
             const Text(
               'Pertanyaan Verifikasi',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -220,11 +208,11 @@ class FormLaporan extends StatelessWidget {
             CustomTextField(
               hintText: 'Pertanyaan Verifikasi',
               icon: Icons.question_answer,
-              controller: pertanyaanController,
+              initialValue: state.pertanyaanVerifikasi,
+              onChanged: cubit.setPertanyaan,
               validator:
-                  (value) =>
-                      selectedTipe == 'Ditemukan' &&
-                              (value == null || value.isEmpty)
+                  (val) =>
+                      val == null || val.isEmpty
                           ? 'Pertanyaan wajib diisi'
                           : null,
             ),
@@ -236,13 +224,11 @@ class FormLaporan extends StatelessWidget {
             CustomTextField(
               hintText: 'Jawaban Verifikasi',
               icon: Icons.lock_outline,
-              controller: jawabanController,
+              initialValue: state.jawabanVerifikasi,
+              onChanged: cubit.setJawaban,
               validator:
-                  (value) =>
-                      selectedTipe == 'Ditemukan' &&
-                              (value == null || value.isEmpty)
-                          ? 'Jawaban wajib diisi'
-                          : null,
+                  (val) =>
+                      val == null || val.isEmpty ? 'Jawaban wajib diisi' : null,
             ),
           ],
           const SizedBox(height: 20),
@@ -254,30 +240,14 @@ class FormLaporan extends StatelessWidget {
                 icon: Icons.camera_alt_outlined,
                 label: "Kamera",
                 onTap: () async {
-                  final picker = ImagePicker();
-                  final picked = await picker.pickImage(
-                    source: ImageSource.camera,
-                  );
-                  if (picked != null) {
-                    context.read<FotoLaporanBloc>().add(
-                      SetSelectedFoto(File(picked.path)),
-                    );
-                  }
+                  context.read<FotoLaporanBloc>().add(TakeFromCamera());
                 },
               ),
               ImageOptionButton(
                 icon: Icons.photo_library_outlined,
                 label: "Galeri",
                 onTap: () async {
-                  final picker = ImagePicker();
-                  final picked = await picker.pickImage(
-                    source: ImageSource.gallery,
-                  );
-                  if (picked != null) {
-                    context.read<FotoLaporanBloc>().add(
-                      SetSelectedFoto(File(picked.path)),
-                    );
-                  }
+                  context.read<FotoLaporanBloc>().add(PickFromGallery());
                 },
               ),
             ],

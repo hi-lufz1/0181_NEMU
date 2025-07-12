@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nemu_app/core/constants/colors.dart';
-import 'package:nemu_app/presentation/bloc/auth/maps/bloc/map_bloc.dart';
+import 'package:nemu_app/presentation/bloc/maps/bloc/map_bloc.dart';
 import 'package:nemu_app/presentation/screens/shared/maps/components/confirm_location_dialog.dart';
 
 class MapScreen extends StatefulWidget {

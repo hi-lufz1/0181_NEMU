@@ -13,6 +13,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     on<PickLocation>(_onPickLocation);
     on<ClearPickedLocation>(_onClearPickedLocation);
     on<SearchLocation>(_onSearchLocation);
+    on<SetPickedLatLng>(_onSetPickedLatLng);
   }
 
   Future<void> _onInitializeMap(
@@ -174,6 +175,39 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  Future<void> _onSetPickedLatLng(
+    SetPickedLatLng event,
+    Emitter<MapState> emit,
+  ) async {
+    try {
+      final latLng = LatLng(event.latitude, event.longitude);
+      final placemarks = await placemarkFromCoordinates(
+        latLng.latitude,
+        latLng.longitude,
+      );
+
+      final marker = Marker(
+        markerId: const MarkerId('picked'),
+        position: latLng,
+        infoWindow: InfoWindow(
+          title: placemarks.first.name ?? 'Lokasi dipilih',
+          snippet:
+              '${placemarks.first.locality ?? ''}, ${placemarks.first.country ?? ''}',
+        ),
+      );
+
+      emit(
+        state.copyWith(
+          pickedLatLng: latLng,
+          pickedAddress: _formatAddress(placemarks.first),
+          pickedMarker: marker,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(error: 'Gagal menyetel lokasi dari draf.'));
+    }
   }
 }
 

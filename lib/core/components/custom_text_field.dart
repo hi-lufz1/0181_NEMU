@@ -4,23 +4,29 @@ import 'package:nemu_app/core/constants/colors.dart';
 class CustomTextField extends StatelessWidget {
   final String? hintText;
   final IconData? icon;
-  final TextEditingController controller;
+  final TextEditingController? controller;
+  final String? initialValue;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
 
   const CustomTextField({
     super.key,
-    required this.hintText,
-    required this.icon,
-    required this.controller,
+    this.hintText,
+    this.icon,
+    this.controller,
+    this.initialValue,
     this.keyboardType = TextInputType.text,
     this.validator,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      initialValue: controller == null ? initialValue : null,
+      onChanged: onChanged,
       keyboardType: keyboardType,
       validator: validator,
       decoration: InputDecoration(
@@ -28,14 +34,14 @@ class CustomTextField extends StatelessWidget {
         hintText: hintText,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey), // Saat tidak fokus
+          borderSide: const BorderSide(color: Colors.grey),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
             color: AppColors.secondary,
             width: 2,
-          ), // Saat fokus
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

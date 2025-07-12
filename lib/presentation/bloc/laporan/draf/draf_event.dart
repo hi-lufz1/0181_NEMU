@@ -32,5 +32,13 @@ class DeleteDrafEvent extends DrafEvent {
   @override
   List<Object?> get props => [id];
 }
+class UpdateDrafEvent extends DrafEvent {
+  final LaporanDrafModel draf;
+  const UpdateDrafEvent(this.draf);
+
+  @override
+  List<Object?> get props => [draf];
+}
+
 
 class DeleteAllDrafEvent extends DrafEvent {}

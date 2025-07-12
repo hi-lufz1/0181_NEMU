@@ -16,6 +16,7 @@ class FotoLaporanBloc extends Bloc<FotoLaporanEvent, FotoLaporanState> {
     on<DeleteFoto>(_onDeleteFoto);
     on<SetSelectedFoto>(_onSetSelectedFoto);
     on<ClearSelectedFoto>(_onClearSelectedFoto);
+    on<LoadFotoFromPath>(_onLoadFotoFromPath);
   }
 
   Future<void> _onPickFromGallery(
@@ -34,16 +35,18 @@ class FotoLaporanBloc extends Bloc<FotoLaporanEvent, FotoLaporanState> {
     }
   }
 
-Future<void> _onTakeFromCamera(
-  TakeFromCamera event,
-  Emitter<FotoLaporanState> emit,
-) async {
-  final picked = await _picker.pickImage(source: ImageSource.camera);
-  if (picked != null) {
-    final saved = await StorageHelper.saveImage(File(picked.path), 'camera_');
-    emit(FotoLaporanPicked(file: saved, message: 'Berhasil ambil dari kamera'));
+  Future<void> _onTakeFromCamera(
+    TakeFromCamera event,
+    Emitter<FotoLaporanState> emit,
+  ) async {
+    final picked = await _picker.pickImage(source: ImageSource.camera);
+    if (picked != null) {
+      final saved = await StorageHelper.saveImage(File(picked.path), 'camera_');
+      emit(
+        FotoLaporanPicked(file: saved, message: 'Berhasil ambil dari kamera'),
+      );
+    }
   }
-}
 
   Future<void> _onDeleteFoto(
     DeleteFoto event,
@@ -73,5 +76,17 @@ Future<void> _onTakeFromCamera(
     Emitter<FotoLaporanState> emit,
   ) async {
     emit(FotoLaporanInitial());
+  }
+
+  Future<void> _onLoadFotoFromPath(
+    LoadFotoFromPath event,
+    Emitter<FotoLaporanState> emit,
+  ) async {
+    final file = File(event.path);
+    if (await file.exists()) {
+      emit(FotoLaporanPicked(file: file, message: 'Foto dimuat dari draft'));
+    } else {
+      emit(FotoLaporanInitial()); // fallback kalau file-nya tidak ada
+    }
   }
 }

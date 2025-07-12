@@ -40,4 +40,15 @@ class DrafDao {
     final db = await dbProvider.database;
     await db.delete(tableName);
   }
+
+  Future<void> update(LaporanDrafModel model) async {
+  final db = await dbProvider.database;
+  await db.update(
+    tableName,
+    model.toMap(),
+    where: 'id = ?',
+    whereArgs: [model.id],
+  );
+}
+
 }

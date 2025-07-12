@@ -15,3 +15,8 @@ class SetSelectedFoto extends FotoLaporanEvent {
 }
 
 class ClearSelectedFoto extends FotoLaporanEvent {}
+
+class LoadFotoFromPath extends FotoLaporanEvent {
+  final String path;
+  LoadFotoFromPath(this.path);
+}

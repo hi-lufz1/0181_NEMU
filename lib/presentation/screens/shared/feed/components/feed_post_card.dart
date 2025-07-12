@@ -23,7 +23,10 @@ class FeedPostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final tanggal =
         laporan.dibuatPada != null
-            ? DateFormat('dd MMMM yyyy', 'id_ID').format(laporan.dibuatPada!)
+            ? DateFormat(
+              'dd MMMM yyyy HH:mm',
+              'id_ID',
+            ).format(laporan.dibuatPada!)
             : '-';
 
     final Uint8List? decodedFoto = getDecodedFoto(laporan.foto);
