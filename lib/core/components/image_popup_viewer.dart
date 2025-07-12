@@ -1,26 +1,28 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 class ImagePopupViewer extends StatelessWidget {
-  final File imageFile;
+  final File? imageFile;
+  final Uint8List? imageBytes;
 
-  const ImagePopupViewer({super.key, required this.imageFile});
+  const ImagePopupViewer({super.key, this.imageFile, this.imageBytes});
 
   @override
   Widget build(BuildContext context) {
+    final imageWidget =
+        imageFile != null
+            ? Image.file(imageFile!, fit: BoxFit.contain)
+            : imageBytes != null
+            ? Image.memory(imageBytes!, fit: BoxFit.contain)
+            : const SizedBox.shrink();
+
     return Dialog(
       backgroundColor: Colors.black,
       insetPadding: const EdgeInsets.all(16),
       child: Stack(
         children: [
-          InteractiveViewer(
-            child: Center(
-              child: Image.file(
-                imageFile,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
+          InteractiveViewer(child: Center(child: imageWidget)),
           Positioned(
             top: 8,
             right: 8,

@@ -31,96 +31,108 @@ class FeedPostCard extends StatelessWidget {
 
     final Uint8List? decodedFoto = getDecodedFoto(laporan.foto);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header: Nama & Tanggal
-          Row(
-            children: [
-              const CircleAvatar(
-                backgroundImage: AssetImage(
-                  'assets/images/logo.png',
-                ), // Placeholder
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    laporan.nama ?? '-', // <- akan ditambahkan dari backend
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    tanggal,
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Tipe + Nama Barang
-          Text(
-            "[${laporan.tipe?.toUpperCase() ?? '-'}] ${laporan.namaBarang ?? '-'}",
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-          ),
-          const SizedBox(height: 6),
-
-          // Lokasi
-          if (laporan.lokasiText != null && laporan.lokasiText!.isNotEmpty)
+    return GestureDetector(
+      onTap: () {
+        if (laporan.id != null) {
+          Navigator.pushNamed(
+            context,
+            '/detail-laporan',
+            arguments: laporan.id,
+          );
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header: Nama & Tanggal
             Row(
               children: [
-                const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    laporan.lokasiText!,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
+                const CircleAvatar(
+                  backgroundImage: AssetImage('assets/images/logo.png'),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      laporan.nama ?? '-',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      tanggal,
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ],
                 ),
               ],
             ),
 
-          const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-          // Deskripsi
-          Text(laporan.deskripsi ?? '-', style: const TextStyle(fontSize: 14)),
-
-          const SizedBox(height: 12),
-
-          // Foto (jika ada)
-          if (decodedFoto != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.memory(
-                decodedFoto,
-                height: 210,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            )
-          else if (laporan.foto != null && laporan.foto!.isNotEmpty)
-            const Text(
-              'Gagal memuat gambar.',
-              style: TextStyle(color: Colors.red),
+            // Tipe + Nama Barang
+            Text(
+              "[${laporan.tipe?.toUpperCase() ?? '-'}] ${laporan.namaBarang ?? '-'}",
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
             ),
-        ],
+            const SizedBox(height: 6),
+
+            // Lokasi
+            if (laporan.lokasiText != null && laporan.lokasiText!.isNotEmpty)
+              Row(
+                children: [
+                  const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      laporan.lokasiText!,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
+
+            const SizedBox(height: 8),
+
+            // Deskripsi
+            Text(
+              laporan.deskripsi ?? '-',
+              style: const TextStyle(fontSize: 14),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Foto (jika ada)
+            if (decodedFoto != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.memory(
+                  decodedFoto,
+                  height: 210,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              )
+            else if (laporan.foto != null && laporan.foto!.isNotEmpty)
+              const Text(
+                'Gagal memuat gambar.',
+                style: TextStyle(color: Colors.red),
+              ),
+          ],
+        ),
       ),
     );
   }

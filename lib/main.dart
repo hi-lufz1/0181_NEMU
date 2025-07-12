@@ -7,7 +7,8 @@ import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 import 'package:nemu_app/data/repository/draf/laporan_draf_repository.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
-import 'package:nemu_app/presentation/bloc/laporan/cubit/form_laporan_cubit.dart';
+import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_cubit.dart';
+import 'package:nemu_app/presentation/bloc/laporan/detail/detail_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/maps/bloc/map_bloc.dart';
 import 'package:nemu_app/presentation/bloc/auth/register/register_bloc.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
@@ -17,6 +18,7 @@ import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc
 import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan_screen.dart';
+import 'package:nemu_app/presentation/screens/shared/detaillaporan/detail_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/draf/draf_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/maps/map_screen.dart';
@@ -63,6 +65,12 @@ class MyApp extends StatelessWidget {
                     DrafBloc(repository: LaporanDrafRepository(dao: DrafDao())),
           ),
           BlocProvider<FormLaporanCubit>(create: (_) => FormLaporanCubit()),
+          BlocProvider<DetailLaporanBloc>(
+            create:
+                (context) => DetailLaporanBloc(
+                  laporanRepository: context.read<LaporanRepository>(),
+                ),
+          ),
         ],
         child: MaterialApp(
           title: 'NEMU App',
@@ -74,6 +82,10 @@ class MyApp extends StatelessWidget {
             '/feed': (context) => const FeedScreen(),
             '/map-picker': (context) => const MapScreen(),
             '/draft': (context) => const DraftLaporanScreen(),
+            '/detail-laporan': (context) {
+              final id = ModalRoute.of(context)!.settings.arguments as String;
+              return DetailLaporanScreen(laporanId: id);
+            },
           },
         ),
       ),

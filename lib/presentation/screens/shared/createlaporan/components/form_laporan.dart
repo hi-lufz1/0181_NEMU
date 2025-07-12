@@ -8,7 +8,7 @@ import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/core/constants/kategori_list.dart';
 import 'package:nemu_app/data/model/kategori_model.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
-import 'package:nemu_app/presentation/bloc/laporan/cubit/form_laporan_cubit.dart';
+import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_cubit.dart';
 import 'laporan_type_selector.dart';
 import 'image_option_button.dart';
 

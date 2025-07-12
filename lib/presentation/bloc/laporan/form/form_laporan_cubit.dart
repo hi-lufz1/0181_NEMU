@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:nemu_app/data/model/laporan_draf_model.dart';
 import 'package:nemu_app/data/model/request/shared/add_laporan_req_model.dart';
-import 'package:nemu_app/presentation/bloc/laporan/cubit/form_laporan_state.dart';
+import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_state.dart';
 
 class FormLaporanCubit extends Cubit<FormLaporanState> {
   FormLaporanCubit() : super(const FormLaporanState());

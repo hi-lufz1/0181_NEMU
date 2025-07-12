@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:nemu_app/core/utils/token_service.dart';
 import 'package:nemu_app/data/model/response/shared/getdetail_res_model.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 
@@ -13,18 +14,21 @@ class DetailLaporanBloc extends Bloc<DetailLaporanEvent, DetailLaporanState> {
     on<DetailLaporanRequested>(_onDetailRequested);
   }
 
-  Future<void> _onDetailRequested(
-    DetailLaporanRequested event,
-    Emitter<DetailLaporanState> emit,
-  ) async {
-    emit(DetailLaporanLoading());
+ Future<void> _onDetailRequested(
+  DetailLaporanRequested event,
+  Emitter<DetailLaporanState> emit,
+) async {
+  emit(DetailLaporanLoading());
 
-    final res = await laporanRepository.getById(event.id);
+  final res = await laporanRepository.getById(event.id);
 
-    if (res.status == 200) {
-      emit(DetailLaporanSuccess(resModel: res));
-    } else {
-      emit(DetailLaporanFailure(resModel: res));
-    }
+  if (res.status == 200 && res.data != null) {
+    final currentUserId = await TokenService.getCurrentUserId();
+    final isMine = res.data!.userId == currentUserId;
+    emit(DetailLaporanSuccess(resModel: res, isLaporanSaya: isMine));
+  } else {
+    emit(DetailLaporanFailure(resModel: res));
   }
+}
+
 }
