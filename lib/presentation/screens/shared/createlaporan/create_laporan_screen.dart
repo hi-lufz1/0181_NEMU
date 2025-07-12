@@ -120,11 +120,9 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                         longitude: pickedLatLng?.longitude,
                       );
 
-                      if (formCubit.draftId != null) {
-                        context.read<DrafBloc>().add(UpdateDrafEvent(draf));
-                      } else {
-                        context.read<DrafBloc>().add(AddDrafEvent(draf));
-                      }
+                      debugPrint('Simpan draf: ${formCubit.draftId ?? 'baru'}');
+
+                      context.read<DrafBloc>().add(AddDrafEvent(draf));
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Disimpan ke draf")),
@@ -165,6 +163,15 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                           ),
                         );
                         return;
+                      }
+                      debugPrint(
+                        'Hapus draf: ${formCubit.draftId ?? 'tidak ada'}',
+                      );
+
+                      if (formCubit.draftId != null) {
+                        context.read<DrafBloc>().add(
+                          DeleteDrafEvent(formCubit.draftId!),
+                        );
                       }
 
                       if (_formKey.currentState!.validate()) {
