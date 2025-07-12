@@ -7,6 +7,7 @@ import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 import 'package:nemu_app/data/repository/draf/laporan_draf_repository.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/deleteuser/delete_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_cubit.dart';
 import 'package:nemu_app/presentation/bloc/laporan/detail/detail_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/maps/bloc/map_bloc.dart';
@@ -68,6 +69,12 @@ class MyApp extends StatelessWidget {
           BlocProvider<DetailLaporanBloc>(
             create:
                 (context) => DetailLaporanBloc(
+                  laporanRepository: context.read<LaporanRepository>(),
+                ),
+          ),
+          BlocProvider<DeleteLaporanBloc>(
+            create:
+                (context) => DeleteLaporanBloc(
                   laporanRepository: context.read<LaporanRepository>(),
                 ),
           ),

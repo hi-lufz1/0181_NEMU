@@ -71,7 +71,7 @@ class DetailLaporanAct extends StatelessWidget {
   }
 
   void _hubungiPenemu(BuildContext context) async {
-    final url = "089608322553";
+    final url = data.kontak?.replaceAll(' ', '').replaceAll('+', '62');
     if (url == null || url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Kontak penemu tidak tersedia")),
@@ -137,10 +137,11 @@ class DetailLaporanAct extends StatelessWidget {
                                   label: "Hapus",
                                   color: Colors.red,
                                   onPressed: () {
-                                    Navigator.pop(context);
                                     context.read<DeleteLaporanBloc>().add(
                                       DeleteLaporanSubmitted(id: data.id!),
                                     );
+                                    Navigator.pop(context);
+                                      Navigator.pushNamedAndRemoveUntil(context, '/feed',  (_) => false);
                                   },
                                 ),
                               ],
