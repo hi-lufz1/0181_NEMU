@@ -7,7 +7,7 @@ import 'package:nemu_app/main.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/components/fab_expand_button.dart';
-import 'package:nemu_app/presentation/screens/shared/feed/components/feed_post_card.dart';
+import 'package:nemu_app/core/components/feed_post_card.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/components/feed_toggle_tab.dart';
 import 'components/feed_header.dart';
 
@@ -85,6 +85,7 @@ class _FeedScreenState extends State<FeedScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    int currentNavIndex = 0;
     return BlocListener<FotoLaporanBloc, FotoLaporanState>(
       listener: (context, state) {
         if (state is FotoLaporanPicked) {

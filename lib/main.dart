@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart'; // Tambahkan ini
 import 'package:nemu_app/core/constants/colors.dart';
+import 'package:nemu_app/core/routes/role_director.dart';
 import 'package:nemu_app/data/datasource/draf_dao.dart';
 import 'package:nemu_app/data/model/response/shared/getdetail_res_model.dart';
 import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 import 'package:nemu_app/data/repository/draf/laporan_draf_repository.dart';
 import 'package:nemu_app/data/repository/klaim/klaim_repository.dart';
+import 'package:nemu_app/data/repository/laporan/laporan_admin_repository.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 import 'package:nemu_app/data/repository/notif/notif_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
@@ -14,6 +16,7 @@ import 'package:nemu_app/presentation/bloc/klaim/bloc/klaim_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/deleteuser/delete_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_cubit.dart';
 import 'package:nemu_app/presentation/bloc/laporan/detail/detail_laporan_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/laporanadmin/laporan_admin_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/update/update_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/maps/bloc/map_bloc.dart';
 import 'package:nemu_app/presentation/bloc/auth/register/register_bloc.dart';
@@ -22,6 +25,7 @@ import 'package:nemu_app/presentation/bloc/laporan/add/add_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/draf/draf_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/presentation/bloc/notif/bloc/notif_bloc.dart';
+import 'package:nemu_app/presentation/screens/admin/feedadmin/admin_feed_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan_screen.dart';
@@ -33,8 +37,8 @@ import 'package:nemu_app/presentation/screens/shared/maps/map_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/search/search_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/umum/notif/notif_screen.dart';
 
-
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -102,13 +106,20 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (_) => NotifBloc(notifRepository: NotifRepository()),
           ),
+
+          BlocProvider(
+            create:
+                (_) => LaporanAdminBloc(repository: LaporanAdminRepository()),
+          ),
         ],
         child: MaterialApp(
           title: 'NEMU App',
           debugShowCheckedModeBanner: false,
           navigatorObservers: [routeObserver],
-          home: const LoginScreen(),
+          home: const RoleRedirector(),
           routes: {
+            '/redirect': (context) => const RoleRedirector(),
+            '/login': (context) => const LoginScreen(),
             '/register': (context) => const RegisterScreen(),
             '/create-laporan': (context) => CreateLaporanScreen(),
             '/feed': (context) => const FeedScreen(),
@@ -126,6 +137,8 @@ class MyApp extends StatelessWidget {
             '/notifikasi': (context) => const NotifScreen(),
             '/search': (_) => const SearchLaporanScreen(),
 
+            //Admin
+            '/admin-feed': (_) => const AdminFeedScreen(),
           },
         ),
       ),

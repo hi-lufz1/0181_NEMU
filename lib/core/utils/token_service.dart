@@ -15,4 +15,17 @@ class TokenService {
       return null;
     }
   }
+
+  static Future<String?> getCurrentUserRole() async {
+  final token = await _storage.read(key: 'authToken');
+  if (token == null) return null;
+
+  try {
+    final decoded = Jwt.parseJwt(token);
+    return decoded['role']?.toString(); 
+  } catch (_) {
+    return null;
+  }
+}
+
 }

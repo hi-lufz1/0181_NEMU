@@ -63,10 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
             );
 
             // Navigasi ke halaman laporan
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const FeedScreen()),
-            );
+            Navigator.pushReplacementNamed(context, '/redirect');
           }
         },
 

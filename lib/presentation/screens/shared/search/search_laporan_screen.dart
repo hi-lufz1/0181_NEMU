@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nemu_app/data/model/request/shared/get_filter_req_model.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
-import 'package:nemu_app/presentation/screens/shared/feed/components/feed_post_card.dart';
+import 'package:nemu_app/core/components/feed_post_card.dart';
 import 'package:nemu_app/presentation/screens/shared/search/components/search_filter_bar.dart';
 import 'package:nemu_app/presentation/screens/shared/search/components/search_filter_sheet.dart';
 
