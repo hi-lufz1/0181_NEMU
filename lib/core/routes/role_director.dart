@@ -24,7 +24,7 @@ class _RoleRedirectorState extends State<RoleRedirector> {
 
     if (role == 'admin') {
       Navigator.pushReplacementNamed(context, '/admin-feed');
-    } else if (role == 'user_umum') {
+    } else if (role == 'umum') {
       Navigator.pushReplacementNamed(context, '/feed');
     } else {
       Navigator.pushReplacementNamed(context, '/login');

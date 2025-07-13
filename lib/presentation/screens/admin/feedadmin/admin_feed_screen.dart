@@ -45,9 +45,11 @@ class _AdminFeedScreenState extends State<AdminFeedScreen> with RouteAware {
     setState(() => currentNavIndex = index);
 
     if (index == 0) {
-      // tetap di halaman ini
+      // Tetap di halaman ini (AdminFeedScreen)
     } else if (index == 1) {
       Navigator.pushNamed(context, '/search');
+    } else if (index == 2) {
+      Navigator.pushNamed(context, '/admin-statistik');
     }
   }
 

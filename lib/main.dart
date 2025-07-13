@@ -25,6 +25,7 @@ import 'package:nemu_app/presentation/bloc/laporan/draf/draf_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/presentation/bloc/notif/bloc/notif_bloc.dart';
 import 'package:nemu_app/presentation/screens/admin/feedadmin/admin_feed_screen.dart';
+import 'package:nemu_app/presentation/screens/admin/statistik/admin_statistik_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan_screen.dart';
@@ -84,94 +85,103 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider<LaporanRepository>(
       create: (context) => LaporanRepository(),
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (_) => LoginBloc(authRepository: AuthRepository()),
-          ),
-          BlocProvider(
-            create: (_) => RegisterBloc(authRepository: AuthRepository()),
-          ),
-          BlocProvider(
-            create:
-                (_) => LaporanUserBloc(
-                  laporanRepository: context.read<LaporanRepository>(),
-                ),
-          ),
-          BlocProvider(create: (_) => FotoLaporanBloc()),
-          BlocProvider(
-            create:
-                (_) => AddLaporanBloc(
-                  laporanRepository: context.read<LaporanRepository>(),
-                ),
-          ),
-          BlocProvider(create: (_) => MapBloc()),
-          BlocProvider(
-            create:
-                (_) =>
-                    DrafBloc(repository: LaporanDrafRepository(dao: DrafDao())),
-          ),
-          BlocProvider(create: (_) => FormLaporanCubit()),
-          BlocProvider(
-            create:
-                (_) => DetailLaporanBloc(
-                  laporanRepository: context.read<LaporanRepository>(),
-                ),
-          ),
-          BlocProvider(
-            create:
-                (_) => DeleteLaporanBloc(
-                  laporanRepository: context.read<LaporanRepository>(),
-                ),
-          ),
-          BlocProvider(
-            create:
-                (_) => UpdateLaporanBloc(
-                  laporanRepository: context.read<LaporanRepository>(),
-                ),
-          ),
-          BlocProvider(
-            create: (_) => KlaimBloc(klaimRepository: KlaimRepository()),
-          ),
-          BlocProvider(
-            create: (_) => NotifBloc(notifRepository: NotifRepository()),
-          ),
-          BlocProvider(
-            create:
-                (_) => LaporanAdminBloc(repository: LaporanAdminRepository()),
-          ),
-          BlocProvider(
-            create:
-                (_) => DeleteAdminBloc(repository: LaporanAdminRepository()),
-          ),
-        ],
-        child: MaterialApp(
-          title: 'NEMU App',
-          debugShowCheckedModeBanner: false,
-          navigatorObservers: [routeObserver],
-          home: const RoleRedirector(),
-          routes: {
-            '/redirect': (context) => const RoleRedirector(),
-            '/login': (context) => const LoginScreen(),
-            '/register': (context) => const RegisterScreen(),
-            '/create-laporan': (context) => CreateLaporanScreen(),
-            '/feed': (context) => const FeedScreen(),
-            '/map-picker': (context) => const MapScreen(),
-            '/draft': (context) => const DraftLaporanScreen(),
-            '/detail-laporan': (context) {
-              final id = ModalRoute.of(context)!.settings.arguments as String;
-              return DetailLaporanScreen(laporanId: id);
-            },
-            '/edit-laporan': (context) {
-              final laporan =
-                  ModalRoute.of(context)!.settings.arguments as Data;
-              return EditLaporanScreen(laporan: laporan);
-            },
-            '/notifikasi': (context) => const NotifScreen(),
-            '/search': (_) => const SearchLaporanScreen(),
-            '/admin-feed': (_) => const AdminFeedScreen(),
-          },
-        ),
+      child: Builder(
+        builder: (context) {
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) => LoginBloc(authRepository: AuthRepository()),
+              ),
+              BlocProvider(
+                create: (_) => RegisterBloc(authRepository: AuthRepository()),
+              ),
+              BlocProvider(
+                create:
+                    (_) => LaporanUserBloc(
+                      laporanRepository: context.read<LaporanRepository>(),
+                    ),
+              ),
+              BlocProvider(
+                create:
+                    (_) => AddLaporanBloc(
+                      laporanRepository: context.read<LaporanRepository>(),
+                    ),
+              ),
+              BlocProvider(
+                create:
+                    (_) => DetailLaporanBloc(
+                      laporanRepository: context.read<LaporanRepository>(),
+                    ),
+              ),
+              BlocProvider(
+                create:
+                    (_) => DeleteLaporanBloc(
+                      laporanRepository: context.read<LaporanRepository>(),
+                    ),
+              ),
+              BlocProvider(
+                create:
+                    (_) => UpdateLaporanBloc(
+                      laporanRepository: context.read<LaporanRepository>(),
+                    ),
+              ),
+              BlocProvider(create: (_) => FotoLaporanBloc()),
+              BlocProvider(create: (_) => MapBloc()),
+              BlocProvider(
+                create:
+                    (_) => DrafBloc(
+                      repository: LaporanDrafRepository(dao: DrafDao()),
+                    ),
+              ),
+              BlocProvider(create: (_) => FormLaporanCubit()),
+              BlocProvider(
+                create: (_) => KlaimBloc(klaimRepository: KlaimRepository()),
+              ),
+              BlocProvider(
+                create: (_) => NotifBloc(notifRepository: NotifRepository()),
+              ),
+              BlocProvider(
+                create:
+                    (_) =>
+                        LaporanAdminBloc(repository: LaporanAdminRepository()),
+              ),
+              BlocProvider(
+                create:
+                    (_) =>
+                        DeleteAdminBloc(repository: LaporanAdminRepository()),
+              ),
+            ],
+            child: MaterialApp(
+              title: 'NEMU App',
+              debugShowCheckedModeBanner: false,
+              navigatorObservers: [routeObserver],
+              home: const RoleRedirector(),
+              routes: {
+                '/redirect': (context) => const RoleRedirector(),
+                '/login': (context) => const LoginScreen(),
+                '/register': (context) => const RegisterScreen(),
+                '/create-laporan': (context) => CreateLaporanScreen(),
+                '/feed': (context) => const FeedScreen(),
+                '/map-picker': (context) => const MapScreen(),
+                '/draft': (context) => const DraftLaporanScreen(),
+                '/detail-laporan': (context) {
+                  final id =
+                      ModalRoute.of(context)!.settings.arguments as String;
+                  return DetailLaporanScreen(laporanId: id);
+                },
+                '/edit-laporan': (context) {
+                  final laporan =
+                      ModalRoute.of(context)!.settings.arguments as Data;
+                  return EditLaporanScreen(laporan: laporan);
+                },
+                '/notifikasi': (context) => const NotifScreen(),
+                '/search': (_) => const SearchLaporanScreen(),
+                '/admin-feed': (_) => const AdminFeedScreen(),
+                '/admin-statistik': (_) => const AdminStatistikScreen(),
+              },
+            ),
+          );
+        },
       ),
     );
   }

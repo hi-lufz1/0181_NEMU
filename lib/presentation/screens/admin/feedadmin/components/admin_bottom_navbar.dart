@@ -35,7 +35,7 @@ class AdminBottomNavbar extends StatelessWidget {
             children: [
               _buildNavIcon(Icons.home_rounded, 0),
               _buildNavIcon(Icons.search_rounded, 1),
-              _buildNavIcon(Icons.assignment_turned_in_rounded, 2),
+              _buildNavIcon(Icons.bar_chart_rounded, 2),
             ],
           ),
         ),
