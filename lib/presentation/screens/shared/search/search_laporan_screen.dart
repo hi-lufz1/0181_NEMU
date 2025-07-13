@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nemu_app/core/utils/token_service.dart';
 import 'package:nemu_app/data/model/request/shared/get_filter_req_model.dart';
+import 'package:nemu_app/data/model/response/shared/getall_res_model.dart';
+import 'package:nemu_app/presentation/bloc/laporan/laporanadmin/laporan_admin_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/core/components/feed_post_card.dart';
+import 'package:nemu_app/presentation/screens/shared/search/components/laporan_list_view.dart';
 import 'package:nemu_app/presentation/screens/shared/search/components/search_filter_bar.dart';
 import 'package:nemu_app/presentation/screens/shared/search/components/search_filter_sheet.dart';
 
@@ -20,10 +24,21 @@ class _SearchLaporanScreenState extends State<SearchLaporanScreen> {
   String? _selectedLokasi;
   DateTime? _tanggalAwal;
   DateTime? _tanggalAkhir;
+  bool isAdmin = false;
+  String? _selectedStatus;
 
   @override
   void initState() {
     super.initState();
+    _loadFilteredData();
+    _initRole();
+  }
+
+  Future<void> _initRole() async {
+    final role = await TokenService.getCurrentUserRole();
+    setState(() {
+      isAdmin = role == 'admin';
+    });
     _loadFilteredData();
   }
 
@@ -33,12 +48,18 @@ class _SearchLaporanScreenState extends State<SearchLaporanScreen> {
       tipe: _selectedTipe,
       kategori: _selectedKategori,
       lokasi: _selectedLokasi,
-      status: 'aktif',
+      status: isAdmin ? _selectedStatus : 'aktif',
       tanggalAwal: _tanggalAwal,
       tanggalAkhir: _tanggalAkhir,
     );
 
-    context.read<LaporanUserBloc>().add(FilterLaporanAktif(filter: filter));
+    if (isAdmin) {
+      context.read<LaporanAdminBloc>().add(
+        LaporanAdminFiltered(filter: filter),
+      );
+    } else {
+      context.read<LaporanUserBloc>().add(FilterLaporanAktif(filter: filter));
+    }
   }
 
   void _resetFilter() {
@@ -72,6 +93,8 @@ class _SearchLaporanScreenState extends State<SearchLaporanScreen> {
           onLokasiChanged: (val) => _selectedLokasi = val,
           onTanggalAwalChanged: (val) => _tanggalAwal = val,
           onTanggalAkhirChanged: (val) => _tanggalAkhir = val,
+          onStatusChanged:
+              isAdmin ? (val) => _selectedStatus = val : null, // admin
           onSubmit: _loadFilteredData,
         );
       },
@@ -115,50 +138,20 @@ class _SearchLaporanScreenState extends State<SearchLaporanScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              BlocBuilder<LaporanUserBloc, LaporanUserState>(
-                builder: (context, state) {
-                  if (state is LaporanUserLoading) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32),
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
+             isAdmin
+  ? BlocBuilder<LaporanAdminBloc, LaporanAdminState>(
+      builder: (context, state) => LaporanListView(state: state),
+    )
+  : BlocBuilder<LaporanUserBloc, LaporanUserState>(
+      builder: (context, state) => LaporanListView(state: state),
+    )
 
-                  if (state is LaporanUserFailure) {
-                    return Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        state.resModel.message ?? "Gagal memuat laporan.",
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    );
-                  }
-
-                  if (state is LaporanUserSuccess) {
-                    final laporanList = state.resModel.data ?? [];
-                    if (laporanList.isEmpty) {
-                      return const Padding(
-                        padding: EdgeInsets.all(24),
-                        child: Text("Tidak ada hasil ditemukan."),
-                      );
-                    }
-
-                    return Column(
-                      children: laporanList
-                          .map((laporan) => FeedPostCard(laporan: laporan))
-                          .toList(),
-                    );
-                  }
-
-                  return const SizedBox();
-                },
-              ),
             ],
           ),
         ),
       ),
     );
   }
+
+  
 }

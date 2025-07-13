@@ -9,7 +9,9 @@ class SearchFilterSheet extends StatelessWidget {
   final String? selectedLokasi;
   final DateTime? tanggalAwal;
   final DateTime? tanggalAkhir;
+  final String? selectedStatus;
 
+  final Function(String?)? onStatusChanged;
   final Function(String?) onTipeChanged;
   final Function(String?) onKategoriChanged;
   final Function(String?) onLokasiChanged;
@@ -24,12 +26,15 @@ class SearchFilterSheet extends StatelessWidget {
     required this.selectedLokasi,
     required this.tanggalAwal,
     required this.tanggalAkhir,
+    this.selectedStatus,
+    this.onStatusChanged,
     required this.onTipeChanged,
     required this.onKategoriChanged,
     required this.onLokasiChanged,
     required this.onTanggalAwalChanged,
     required this.onTanggalAkhirChanged,
     required this.onSubmit,
+    re,
   });
 
   @override
@@ -49,8 +54,26 @@ class SearchFilterSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Filter Laporan", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                "Filter Laporan",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
+              if (onStatusChanged != null) ...[
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: selectedStatus,
+                  decoration: const InputDecoration(labelText: "Status"),
+                  items: const [
+                    DropdownMenuItem(value: null, child: Text("Semua")),
+                    DropdownMenuItem(value: "aktif", child: Text("Aktif")),
+                    DropdownMenuItem(value: "selesai", child: Text("Selesai")),
+                    DropdownMenuItem(value: "ditolak", child: Text("Ditolak")),
+                  ],
+                  onChanged:
+                      (val) => setModalState(() => onStatusChanged!(val)),
+                ),
+              ],
 
               // Lokasi
               TextFormField(
@@ -65,9 +88,15 @@ class SearchFilterSheet extends StatelessWidget {
               DropdownButtonFormField<String>(
                 value: selectedKategori,
                 decoration: const InputDecoration(labelText: "Kategori"),
-                items: KategoriList.all
-                    .map((k) => DropdownMenuItem(value: k.nama, child: Text(k.nama)))
-                    .toList(),
+                items:
+                    KategoriList.all
+                        .map(
+                          (k) => DropdownMenuItem(
+                            value: k.nama,
+                            child: Text(k.nama),
+                          ),
+                        )
+                        .toList(),
                 onChanged: (val) => setModalState(() => onKategoriChanged(val)),
               ),
 
@@ -79,7 +108,10 @@ class SearchFilterSheet extends StatelessWidget {
                 decoration: const InputDecoration(labelText: "Tipe"),
                 items: const [
                   DropdownMenuItem(value: 'hilang', child: Text('Hilang')),
-                  DropdownMenuItem(value: 'ditemukan', child: Text('Ditemukan')),
+                  DropdownMenuItem(
+                    value: 'ditemukan',
+                    child: Text('Ditemukan'),
+                  ),
                 ],
                 onChanged: (val) => setModalState(() => onTipeChanged(val)),
               ),
@@ -93,7 +125,9 @@ class SearchFilterSheet extends StatelessWidget {
                     child: _DateField(
                       label: "Tanggal Awal",
                       date: tanggalAwal,
-                      onPick: (date) => setModalState(() => onTanggalAwalChanged(date)),
+                      onPick:
+                          (date) =>
+                              setModalState(() => onTanggalAwalChanged(date)),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -101,7 +135,9 @@ class SearchFilterSheet extends StatelessWidget {
                     child: _DateField(
                       label: "Tanggal Akhir",
                       date: tanggalAkhir,
-                      onPick: (date) => setModalState(() => onTanggalAkhirChanged(date)),
+                      onPick:
+                          (date) =>
+                              setModalState(() => onTanggalAkhirChanged(date)),
                     ),
                   ),
                 ],
@@ -116,7 +152,9 @@ class SearchFilterSheet extends StatelessWidget {
                       tanggalAkhir!.isBefore(tanggalAwal!)) {
                     ScaffoldMessenger.of(rootContext).showSnackBar(
                       const SnackBar(
-                        content: Text("Tanggal akhir tidak boleh sebelum tanggal awal."),
+                        content: Text(
+                          "Tanggal akhir tidak boleh sebelum tanggal awal.",
+                        ),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -125,7 +163,7 @@ class SearchFilterSheet extends StatelessWidget {
                   Navigator.pop(context);
                   onSubmit();
                 },
-              )
+              ),
             ],
           ),
         );
