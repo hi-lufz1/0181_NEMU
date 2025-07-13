@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nemu_app/core/components/custom_bottom_navbar.dart';
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/model/response/shared/getall_res_model.dart';
+import 'package:nemu_app/main.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/components/fab_expand_button.dart';
@@ -17,7 +18,7 @@ class FeedScreen extends StatefulWidget {
   State<FeedScreen> createState() => _FeedScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> {
+class _FeedScreenState extends State<FeedScreen> with RouteAware {
   int selectedIndex = 0; // Untuk tab "Semua" atau "Laporan Saya"
   int currentNavIndex = 0; // Untuk bottom navbar
   bool isFabOpen = false;
@@ -29,10 +30,34 @@ class _FeedScreenState extends State<FeedScreen> {
     });
   }
 
+  void _loadFeed() {
+    if (selectedIndex == 0) {
+      context.read<LaporanUserBloc>().add(GetAllAktifLaporan());
+    } else {
+      context.read<LaporanUserBloc>().add(GetLaporanSaya());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    context.read<LaporanUserBloc>().add(GetAllAktifLaporan());
+    _loadFeed();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  void didPopNext() {
+    _loadFeed(); // Refresh data
   }
 
   void _onTabChanged(int index) {
@@ -52,6 +77,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
     if (index == 0) {
     } else if (index == 1) {
+      Navigator.pushNamed(context, '/search');
     } else if (index == 2) {
       context.read<FotoLaporanBloc>().add(TakeFromCamera());
     }

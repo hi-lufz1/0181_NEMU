@@ -30,7 +30,11 @@ import 'package:nemu_app/presentation/screens/shared/draf/draf_laporan_screen.da
 import 'package:nemu_app/presentation/screens/shared/editlaporan/edit_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/maps/map_screen.dart';
+import 'package:nemu_app/presentation/screens/shared/search/search_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/umum/notif/notif_screen.dart';
+
+
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -102,6 +106,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'NEMU App',
           debugShowCheckedModeBanner: false,
+          navigatorObservers: [routeObserver],
           home: const LoginScreen(),
           routes: {
             '/register': (context) => const RegisterScreen(),
@@ -119,6 +124,8 @@ class MyApp extends StatelessWidget {
               return EditLaporanScreen(laporan: laporan);
             },
             '/notifikasi': (context) => const NotifScreen(),
+            '/search': (_) => const SearchLaporanScreen(),
+
           },
         ),
       ),

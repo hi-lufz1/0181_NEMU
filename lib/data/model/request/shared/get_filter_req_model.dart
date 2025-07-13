@@ -4,6 +4,8 @@ class GetFilterReqModel {
   final String? kategori;
   final String? tipe;
   final String? search;
+  final DateTime? tanggalAwal;
+  final DateTime? tanggalAkhir;
 
   GetFilterReqModel({
     this.status,
@@ -11,6 +13,8 @@ class GetFilterReqModel {
     this.kategori,
     this.tipe,
     this.search,
+    this.tanggalAwal,
+    this.tanggalAkhir,
   });
 
   /// Konversi ke query params
@@ -22,7 +26,16 @@ class GetFilterReqModel {
     if (kategori != null && kategori!.isNotEmpty) query['kategori'] = kategori!;
     if (tipe != null && tipe!.isNotEmpty) query['tipe'] = tipe!;
     if (search != null && search!.isNotEmpty) query['search'] = search!;
+    if (tanggalAwal != null) {
+      query['tanggal_awal'] = _formatDate(tanggalAwal!);
+    }
+    if (tanggalAkhir != null) {
+      query['tanggal_akhir'] = _formatDate(tanggalAkhir!);
+    }
 
     return query;
+  }
+  String _formatDate(DateTime date) {
+    return "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
 }
