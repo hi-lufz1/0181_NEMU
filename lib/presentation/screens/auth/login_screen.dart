@@ -100,21 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: "Password",
                     controller: passwordController,
                   ),
-                  const SizedBox(height: 8),
-
-                  // Remember me
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: rememberMe,
-                        onChanged:
-                            (val) => setState(() => rememberMe = val ?? false),
-                      ),
-                      const Text("Remember Me"),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
+                  const SizedBox(height: 48),
                   // Button
                   state is LoginLoading
                       ? const Center(child: CircularProgressIndicator())

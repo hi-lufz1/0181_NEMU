@@ -22,10 +22,12 @@ class DetailLaporanScreen extends StatelessWidget {
               DetailLaporanBloc(laporanRepository: context.read())
                 ..add(DetailLaporanRequested(id: laporanId)),
       child: Scaffold(
+        backgroundColor: const Color(0xFFF5F9F8),
         appBar: AppBar(
           backgroundColor: Colors.white,
+          foregroundColor: Colors.black87,
           surfaceTintColor: Colors.white,
-          elevation: 0,
+          elevation: 1,
           title: const Text(
             "Detail Laporan",
             style: TextStyle(color: Colors.black),

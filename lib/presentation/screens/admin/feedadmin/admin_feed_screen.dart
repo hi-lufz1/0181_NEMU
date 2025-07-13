@@ -162,11 +162,8 @@ class _AdminFeedScreenState extends State<AdminFeedScreen> with RouteAware {
               ),
             ),
           ),
+          AdminBottomNavbar(currentIndex: currentNavIndex, onTap: _onNavTapped),
         ],
-      ),
-      bottomNavigationBar: AdminBottomNavbar(
-        currentIndex: currentNavIndex,
-        onTap: _onNavTapped,
       ),
     );
   }

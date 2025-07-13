@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nemu_app/core/components/custom_button.dart';
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/core/utils/pdf_export_helper.dart';
 import 'package:nemu_app/data/model/response/shared/getall_res_model.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_admin_repository.dart';
 import 'package:nemu_app/data/repository/laporan/statistik_repository.dart';
 import 'package:nemu_app/presentation/bloc/laporan/stat/statistik_bloc.dart';
+import 'package:nemu_app/presentation/screens/admin/statistik/components/stat_card.dart';
 
 class AdminStatistikScreen extends StatelessWidget {
   const AdminStatistikScreen({super.key});
@@ -47,24 +49,24 @@ class AdminStatistikScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SectionTitle(title: "\uD83D\uDCCA Rekap Laporan"),
+                    SectionTitle(title: "\uD83D\uDCCA Rekap Laporan"),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _StatCard(
+                        StatCard(
                           label: 'Aktif',
                           count: data.totalAktif,
                           color: AppColors.primary,
                           icon: Icons.visibility,
                         ),
-                        _StatCard(
+                        StatCard(
                           label: 'Diklaim',
                           count: data.totalDiklaim,
                           color: AppColors.secondary,
                           icon: Icons.verified,
                         ),
-                        _StatCard(
+                        StatCard(
                           label: 'Dihapus',
                           count: data.totalDihapusAdmin,
                           color: Colors.redAccent,
@@ -73,9 +75,9 @@ class AdminStatistikScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    _SectionTitle(title: "\u2705 Klaim Berhasil"),
+                    SectionTitle(title: "\u2705 Klaim Berhasil"),
                     const SizedBox(height: 12),
-                    _StatCard(
+                    StatCard(
                       label: 'Klaim Berhasil',
                       count: data.klaimBerhasil,
                       color: Colors.green,
@@ -83,7 +85,7 @@ class AdminStatistikScreen extends StatelessWidget {
                       fullWidth: true,
                     ),
                     const SizedBox(height: 24),
-                    _SectionTitle(title: "\uD83C\uDF7F️ Top Kategori"),
+                    SectionTitle(title: "\uD83C\uDF7F️ Top Kategori"),
                     const SizedBox(height: 12),
                     ...data.topKategori!.map(
                       (kat) => Card(
@@ -102,20 +104,8 @@ class AdminStatistikScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
                     Center(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.picture_as_pdf),
-                        label: const Text("Export Semua Laporan"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                      child: CustomButton(
+                        label: "Export Semua Laporan",
                         onPressed: () async {
                           final laporanList = await _fetchAllLaporanForExport();
                           await PDFExportHelper.exportAllLaporan(
@@ -132,74 +122,6 @@ class AdminStatistikScreen extends StatelessWidget {
             return const Center(child: Text("Tidak ada data"));
           },
         ),
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String label;
-  final int? count;
-  final Color color;
-  final IconData icon;
-  final bool fullWidth;
-
-  const _StatCard({
-    required this.label,
-    required this.count,
-    required this.color,
-    required this.icon,
-    this.fullWidth = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: fullWidth ? double.infinity : 100,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 28),
-          const SizedBox(height: 6),
-          Text(
-            '$count',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 14, color: Colors.black87),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  final String title;
-  const _SectionTitle({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Colors.black87,
       ),
     );
   }

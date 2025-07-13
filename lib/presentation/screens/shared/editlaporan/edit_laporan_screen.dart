@@ -36,7 +36,13 @@ class EditLaporanScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => UpdateLaporanBloc(laporanRepository: context.read()),
       child: Scaffold(
-        appBar: AppBar(title: const Text("Edit Laporan"), centerTitle: true),
+        appBar: AppBar(
+          title: const Text("Edit Laporan"),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black87,
+          elevation: 1,
+          centerTitle: true,
+        ),
         body: BlocListener<UpdateLaporanBloc, UpdateLaporanState>(
           listener: (context, state) {
             if (state is UpdateLaporanSuccess) {

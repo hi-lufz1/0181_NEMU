@@ -136,16 +136,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const Expanded(
                           child: Text.rich(
                             TextSpan(
-                              text: 'I agree to ',
+                              text: 'Saya bersedia untuk ',
                               children: [
                                 TextSpan(
-                                  text: 'Privacy Policy',
+                                  text: 'dihubungi melalui WhatsApp',
                                   style: TextStyle(color: Colors.blue),
                                 ),
-                                TextSpan(text: ' and '),
                                 TextSpan(
-                                  text: 'Terms of use',
-                                  style: TextStyle(color: Colors.blue),
+                                  text:
+                                      ' oleh pengguna lain terkait laporan barang hilang atau ditemukan yang saya buat.',
                                 ),
                               ],
                             ),

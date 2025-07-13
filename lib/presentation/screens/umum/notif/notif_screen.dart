@@ -25,7 +25,14 @@ class _NotifScreenState extends State<NotifScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Notifikasi")),
+      backgroundColor: const Color(0xFFF5F9F8),
+      appBar: AppBar(
+        title: const Text("Notifikasi"),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        elevation: 1,
+        centerTitle: true,
+      ),
       body: BlocBuilder<NotifBloc, NotifState>(
         builder: (context, state) {
           if (state is NotifLoading) {

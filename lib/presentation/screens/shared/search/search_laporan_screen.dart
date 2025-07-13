@@ -26,7 +26,6 @@ class _SearchLaporanScreenState extends State<SearchLaporanScreen> {
   DateTime? _tanggalAkhir;
   bool isAdmin = false;
   String? _selectedStatus;
-  
 
   @override
   void initState() {
@@ -105,14 +104,16 @@ class _SearchLaporanScreenState extends State<SearchLaporanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF7F6),
+      backgroundColor: const Color(0xFFF5F9F8),
       appBar: AppBar(
         title: const Text(
           "Cari Laporan",
           style: TextStyle(color: Colors.black87),
         ),
         backgroundColor: Colors.white,
-        elevation: 0,
+        foregroundColor: Colors.black87,
+        elevation: 1,
+        centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black87),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _resetFilter),
@@ -139,20 +140,17 @@ class _SearchLaporanScreenState extends State<SearchLaporanScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-             isAdmin
-  ? BlocBuilder<LaporanAdminBloc, LaporanAdminState>(
-      builder: (context, state) => LaporanListView(state: state),
-    )
-  : BlocBuilder<LaporanUserBloc, LaporanUserState>(
-      builder: (context, state) => LaporanListView(state: state),
-    )
-
+              isAdmin
+                  ? BlocBuilder<LaporanAdminBloc, LaporanAdminState>(
+                    builder: (context, state) => LaporanListView(state: state),
+                  )
+                  : BlocBuilder<LaporanUserBloc, LaporanUserState>(
+                    builder: (context, state) => LaporanListView(state: state),
+                  ),
             ],
           ),
         ),
       ),
     );
   }
-
-  
 }

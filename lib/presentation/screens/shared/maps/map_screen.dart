@@ -44,7 +44,14 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pilih Lokasi')),
+      backgroundColor: const Color(0xFFF5F9F8),
+      appBar: AppBar(
+        title: const Text('Pilih Lokasi'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        elevation: 1,
+        centerTitle: true,
+      ),
       body: BlocConsumer<MapBloc, MapState>(
         listener: (context, state) {
           if (state.error != null) {

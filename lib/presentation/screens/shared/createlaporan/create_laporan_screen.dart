@@ -77,7 +77,13 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Buat Laporan')),
+        backgroundColor: const Color(0xFFF5F9F8),
+        appBar: AppBar(
+          title: const Text('Buat Laporan'),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black87,
+          elevation: 1,
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: FormLaporan(formKey: _formKey),
