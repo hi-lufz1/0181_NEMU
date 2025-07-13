@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nemu_app/core/utils/pdf_export_helper.dart';
 import 'package:nemu_app/presentation/bloc/laporan/detail/detail_laporan_bloc.dart';
 import 'package:nemu_app/presentation/screens/shared/detaillaporan/components/detail_laporan_act.dart';
 import 'package:nemu_app/presentation/screens/shared/detaillaporan/components/detail_laporan_content.dart';
@@ -31,7 +32,27 @@ class DetailLaporanScreen extends StatelessWidget {
           ),
           centerTitle: true,
           iconTheme: const IconThemeData(color: Colors.black),
+          actions: [
+            BlocBuilder<DetailLaporanBloc, DetailLaporanState>(
+              builder: (context, state) {
+                if (state is DetailLaporanSuccess &&
+                    (state.isLaporanSaya || state.isAdmin)) {
+                  return IconButton(
+                    icon: const Icon(Icons.picture_as_pdf_rounded),
+                    tooltip: "Export PDF",
+                    onPressed: () async {
+                      await PDFExportHelper.exportSingleLaporan(
+                        state.resModel.data!,
+                      );
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
         ),
+
         body: BlocBuilder<DetailLaporanBloc, DetailLaporanState>(
           builder: (context, state) {
             if (state is DetailLaporanLoading) {

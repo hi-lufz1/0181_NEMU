@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nemu_app/core/constants/colors.dart';
+import 'package:nemu_app/core/utils/pdf_export_helper.dart';
+import 'package:nemu_app/data/model/response/shared/getall_res_model.dart';
+import 'package:nemu_app/data/repository/laporan/laporan_admin_repository.dart';
 import 'package:nemu_app/data/repository/laporan/statistik_repository.dart';
 import 'package:nemu_app/presentation/bloc/laporan/stat/statistik_bloc.dart';
 
 class AdminStatistikScreen extends StatelessWidget {
   const AdminStatistikScreen({super.key});
+
+  Future<List<Datum>> _fetchAllLaporanForExport() async {
+    final res = await LaporanAdminRepository().getAllAdmin();
+    return res.data ?? [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +47,7 @@ class AdminStatistikScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SectionTitle(title: "📊 Rekap Laporan"),
+                    _SectionTitle(title: "\uD83D\uDCCA Rekap Laporan"),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -65,8 +73,7 @@ class AdminStatistikScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-
-                    _SectionTitle(title: "✅ Klaim Berhasil"),
+                    _SectionTitle(title: "\u2705 Klaim Berhasil"),
                     const SizedBox(height: 12),
                     _StatCard(
                       label: 'Klaim Berhasil',
@@ -75,9 +82,8 @@ class AdminStatistikScreen extends StatelessWidget {
                       icon: Icons.check_circle,
                       fullWidth: true,
                     ),
-
                     const SizedBox(height: 24),
-                    _SectionTitle(title: "🏷️ Top Kategori"),
+                    _SectionTitle(title: "\uD83C\uDF7F️ Top Kategori"),
                     const SizedBox(height: 12),
                     ...data.topKategori!.map(
                       (kat) => Card(
@@ -94,11 +100,35 @@ class AdminStatistikScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 32),
+                    Center(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.picture_as_pdf),
+                        label: const Text("Export Semua Laporan"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () async {
+                          final laporanList = await _fetchAllLaporanForExport();
+                          await PDFExportHelper.exportAllLaporan(
+                            laporanList,
+                          ); // ← sekarang ini tidak error
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               );
             }
-
             return const Center(child: Text("Tidak ada data"));
           },
         ),
