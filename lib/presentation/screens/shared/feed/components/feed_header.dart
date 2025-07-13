@@ -29,7 +29,7 @@ class FeedHeader extends StatelessWidget {
                       child: const Icon(Icons.notifications, size: 28),
                     ),
                   ),
-                  // Uncomment ini jika nanti ingin badge merah kecil
+                  // Badge merah (jika ingin diaktifkan)
                   // Positioned(
                   //   top: 2,
                   //   right: 2,
@@ -59,44 +59,62 @@ class FeedHeader extends StatelessWidget {
             onPressed: () async {
               final confirm = await showDialog<bool>(
                 context: context,
-                builder: (_) => AlertDialog(
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  title: const Text(
-                    'Konfirmasi Logout',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  content: const Text(
-                    'Yakin ingin keluar dari akun ini?',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  actionsPadding: const EdgeInsets.only(right: 16, bottom: 12),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.grey[700],
+                builder:
+                    (_) => AlertDialog(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Text('Batal'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
+                      title: const Text(
+                        'Konfirmasi Logout',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black87,
+                        ),
                       ),
-                      child: const Text('Logout'),
+                      content: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Yakin ingin keluar dari akun ini?',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'Semua draf laporan yang sudah kamu simpan akan dihapus saat logout.',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        ],
+                      ),
+                      actionsPadding: const EdgeInsets.only(
+                        right: 16,
+                        bottom: 12,
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.grey[700],
+                          ),
+                          child: const Text('Batal'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                          child: const Text('Logout'),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
               );
 
               if (confirm == true) {
