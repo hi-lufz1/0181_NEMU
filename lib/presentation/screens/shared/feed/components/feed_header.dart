@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nemu_app/core/utils/logout_helper.dart';
 
 class FeedHeader extends StatelessWidget {
   const FeedHeader({super.key});
@@ -55,8 +56,29 @@ class FeedHeader extends StatelessWidget {
           // Tombol Logout
           IconButton(
             icon: const Icon(Icons.logout, size: 28, color: Colors.black),
-            onPressed: () {
-              // TODO: Logout handler
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder:
+                    (_) => AlertDialog(
+                      title: const Text('Konfirmasi Logout'),
+                      content: const Text('Yakin ingin keluar dari akun ini?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Batal'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Logout'),
+                        ),
+                      ],
+                    ),
+              );
+
+              if (confirm == true) {
+                logoutUser(context);
+              }
             },
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nemu_app/core/utils/status_utils.dart';
 import 'package:nemu_app/core/components/custom_button.dart';
 import 'package:nemu_app/core/constants/kategori_list.dart';
 
@@ -64,17 +65,23 @@ class SearchFilterSheet extends StatelessWidget {
                 DropdownButtonFormField<String>(
                   value: selectedStatus,
                   decoration: const InputDecoration(labelText: "Status"),
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text("Semua")),
-                    DropdownMenuItem(value: "aktif", child: Text("Aktif")),
-                    DropdownMenuItem(value: "selesai", child: Text("Selesai")),
-                    DropdownMenuItem(value: "ditolak", child: Text("Ditolak")),
+                  items: [
+                    const DropdownMenuItem(value: null, child: Text("Semua")),
+                    ...getStatusFilterOptions().entries.map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    ),
                   ],
                   onChanged:
-                      (val) => setModalState(() => onStatusChanged!(val)),
+                      onStatusChanged != null
+                          ? (val) => setModalState(() => onStatusChanged!(val))
+                          : null,
                 ),
               ],
 
+              const SizedBox(height: 16),
               // Lokasi
               TextFormField(
                 initialValue: selectedLokasi,

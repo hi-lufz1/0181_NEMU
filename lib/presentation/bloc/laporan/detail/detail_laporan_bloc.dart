@@ -10,11 +10,12 @@ part 'detail_laporan_state.dart';
 class DetailLaporanBloc extends Bloc<DetailLaporanEvent, DetailLaporanState> {
   final LaporanRepository laporanRepository;
 
-  DetailLaporanBloc({required this.laporanRepository}) : super(DetailLaporanInitial()) {
+  DetailLaporanBloc({required this.laporanRepository})
+    : super(DetailLaporanInitial()) {
     on<DetailLaporanRequested>(_onDetailRequested);
   }
 
- Future<void> _onDetailRequested(
+  Future<void> _onDetailRequested(
   DetailLaporanRequested event,
   Emitter<DetailLaporanState> emit,
 ) async {
@@ -24,8 +25,16 @@ class DetailLaporanBloc extends Bloc<DetailLaporanEvent, DetailLaporanState> {
 
   if (res.status == 200 && res.data != null) {
     final currentUserId = await TokenService.getCurrentUserId();
+    final role = await TokenService.getCurrentUserRole();
+
     final isMine = res.data!.userId == currentUserId;
-    emit(DetailLaporanSuccess(resModel: res, isLaporanSaya: isMine));
+    final isAdmin = role == "admin";
+
+    emit(DetailLaporanSuccess(
+      resModel: res,
+      isLaporanSaya: isMine,
+      isAdmin: isAdmin,
+    ));
   } else {
     emit(DetailLaporanFailure(resModel: res));
   }

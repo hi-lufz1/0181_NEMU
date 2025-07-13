@@ -16,14 +16,19 @@ class DetailLaporanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DetailLaporanBloc(laporanRepository: context.read())
-        ..add(DetailLaporanRequested(id: laporanId)),
+      create:
+          (context) =>
+              DetailLaporanBloc(laporanRepository: context.read())
+                ..add(DetailLaporanRequested(id: laporanId)),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
           elevation: 0,
-          title: const Text("Detail Laporan", style: TextStyle(color: Colors.black)),
+          title: const Text(
+            "Detail Laporan",
+            style: TextStyle(color: Colors.black),
+          ),
           centerTitle: true,
           iconTheme: const IconThemeData(color: Colors.black),
         ),
@@ -32,7 +37,9 @@ class DetailLaporanScreen extends StatelessWidget {
             if (state is DetailLaporanLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is DetailLaporanFailure) {
-              return Center(child: Text(state.resModel.message ?? 'Gagal memuat data'));
+              return Center(
+                child: Text(state.resModel.message ?? 'Gagal memuat data'),
+              );
             } else if (state is DetailLaporanSuccess) {
               final data = state.resModel.data!;
               final decodedImage = _decodeBase64Image(data.foto);
@@ -45,7 +52,11 @@ class DetailLaporanScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     DetailLaporanContent(data: data),
                     const SizedBox(height: 24),
-                    DetailLaporanAct(data: data, isLaporanSaya: state.isLaporanSaya),
+                    DetailLaporanAct(
+                      data: data,
+                      isLaporanSaya: state.isLaporanSaya,
+                      isAdmin: state.isAdmin,
+                    ),
                     const SizedBox(height: 32),
                   ],
                 ),

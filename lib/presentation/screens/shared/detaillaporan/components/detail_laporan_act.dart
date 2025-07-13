@@ -7,6 +7,7 @@ import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/deleteuser/delete_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_cubit.dart';
 import 'package:nemu_app/presentation/bloc/laporan/update/update_laporan_bloc.dart';
+import 'package:nemu_app/presentation/screens/admin/delete/delete_by_admin_dialog.dart';
 import 'package:nemu_app/presentation/screens/shared/detaillaporan/components/klaim_dialog.dart';
 import 'package:nemu_app/presentation/screens/shared/editlaporan/edit_laporan_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,11 +15,13 @@ import 'package:url_launcher/url_launcher.dart';
 class DetailLaporanAct extends StatelessWidget {
   final Data data;
   final bool isLaporanSaya;
+  final bool isAdmin;
 
   const DetailLaporanAct({
     super.key,
     required this.data,
     required this.isLaporanSaya,
+    this.isAdmin = false,
   });
 
   void _hubungiPenemu(BuildContext context) async {
@@ -185,6 +188,17 @@ class DetailLaporanAct extends StatelessWidget {
                           ),
                         ],
                       ),
+                );
+              },
+            );
+          } else if (isAdmin && isAktif) {
+            return CustomButton(
+              label: "Hapus oleh Admin",
+              color: Colors.red,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => DeleteByAdminDialog(laporanId: data.id!),
                 );
               },
             );

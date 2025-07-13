@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/date_symbol_data_local.dart'; // Tambahkan ini
-import 'package:nemu_app/core/constants/colors.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:nemu_app/core/routes/role_director.dart';
 import 'package:nemu_app/data/datasource/draf_dao.dart';
-import 'package:nemu_app/data/model/response/shared/getdetail_res_model.dart';
 import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 import 'package:nemu_app/data/repository/draf/laporan_draf_repository.dart';
 import 'package:nemu_app/data/repository/klaim/klaim_repository.dart';
@@ -13,6 +11,7 @@ import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 import 'package:nemu_app/data/repository/notif/notif_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
 import 'package:nemu_app/presentation/bloc/klaim/bloc/klaim_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/deleteadmin/delete_admin_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/deleteuser/delete_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_cubit.dart';
 import 'package:nemu_app/presentation/bloc/laporan/detail/detail_laporan_bloc.dart';
@@ -36,67 +35,98 @@ import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/maps/map_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/search/search_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/umum/notif/notif_screen.dart';
+import 'package:nemu_app/data/model/response/shared/getdetail_res_model.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
 
-  runApp(const MyApp());
+  runApp(const MyAppWrapper());
 }
 
+// WRAPPER UNTUK RESET APP SAAT LOGOUT
+class MyAppWrapper extends StatefulWidget {
+  const MyAppWrapper({super.key});
+
+  @override
+  State<MyAppWrapper> createState() => _MyAppWrapperState();
+
+  static void restartApp(BuildContext context) {
+    final _MyAppWrapperState? state =
+        context.findAncestorStateOfType<_MyAppWrapperState>();
+    state?.restartApp();
+  }
+}
+
+class _MyAppWrapperState extends State<MyAppWrapper> {
+  Key _key = UniqueKey();
+
+  void restartApp() {
+    setState(() {
+      _key = UniqueKey();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyedSubtree(key: _key, child: const MyApp());
+  }
+}
+
+// APP UTAMA
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider<LaporanRepository>(
-      create: (context) => LaporanRepository(), // buat instance-nya
+      create: (context) => LaporanRepository(),
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<LoginBloc>(
-            create: (context) => LoginBloc(authRepository: AuthRepository()),
+          BlocProvider(
+            create: (_) => LoginBloc(authRepository: AuthRepository()),
           ),
-          BlocProvider<RegisterBloc>(
-            create: (context) => RegisterBloc(authRepository: AuthRepository()),
+          BlocProvider(
+            create: (_) => RegisterBloc(authRepository: AuthRepository()),
           ),
           BlocProvider(
             create:
-                (context) => LaporanUserBloc(
+                (_) => LaporanUserBloc(
                   laporanRepository: context.read<LaporanRepository>(),
                 ),
           ),
-          BlocProvider<FotoLaporanBloc>(create: (context) => FotoLaporanBloc()),
-          BlocProvider<AddLaporanBloc>(
+          BlocProvider(create: (_) => FotoLaporanBloc()),
+          BlocProvider(
             create:
-                (context) => AddLaporanBloc(
+                (_) => AddLaporanBloc(
                   laporanRepository: context.read<LaporanRepository>(),
                 ),
           ),
-          BlocProvider<MapBloc>(create: (context) => MapBloc()),
+          BlocProvider(create: (_) => MapBloc()),
           BlocProvider(
             create:
                 (_) =>
                     DrafBloc(repository: LaporanDrafRepository(dao: DrafDao())),
           ),
-          BlocProvider<FormLaporanCubit>(create: (_) => FormLaporanCubit()),
-          BlocProvider<DetailLaporanBloc>(
+          BlocProvider(create: (_) => FormLaporanCubit()),
+          BlocProvider(
             create:
-                (context) => DetailLaporanBloc(
+                (_) => DetailLaporanBloc(
                   laporanRepository: context.read<LaporanRepository>(),
                 ),
           ),
-          BlocProvider<DeleteLaporanBloc>(
+          BlocProvider(
             create:
-                (context) => DeleteLaporanBloc(
+                (_) => DeleteLaporanBloc(
                   laporanRepository: context.read<LaporanRepository>(),
                 ),
           ),
-          BlocProvider<UpdateLaporanBloc>(
+          BlocProvider(
             create:
-                (context) => UpdateLaporanBloc(
+                (_) => UpdateLaporanBloc(
                   laporanRepository: context.read<LaporanRepository>(),
                 ),
           ),
@@ -106,10 +136,13 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (_) => NotifBloc(notifRepository: NotifRepository()),
           ),
-
           BlocProvider(
             create:
                 (_) => LaporanAdminBloc(repository: LaporanAdminRepository()),
+          ),
+          BlocProvider(
+            create:
+                (_) => DeleteAdminBloc(repository: LaporanAdminRepository()),
           ),
         ],
         child: MaterialApp(
@@ -136,8 +169,6 @@ class MyApp extends StatelessWidget {
             },
             '/notifikasi': (context) => const NotifScreen(),
             '/search': (_) => const SearchLaporanScreen(),
-
-            //Admin
             '/admin-feed': (_) => const AdminFeedScreen(),
           },
         ),

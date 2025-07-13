@@ -14,14 +14,16 @@ class DetailLaporanLoading extends DetailLaporanState {}
 class DetailLaporanSuccess extends DetailLaporanState {
   final GetdetailResModel resModel;
   final bool isLaporanSaya;
+  final bool isAdmin;
 
   const DetailLaporanSuccess({
     required this.resModel,
     required this.isLaporanSaya,
+    required this.isAdmin,
   });
 
   @override
-  List<Object?> get props => [resModel, isLaporanSaya];
+  List<Object?> get props => [resModel, isLaporanSaya, isAdmin];
 }
 
 class DetailLaporanFailure extends DetailLaporanState {
