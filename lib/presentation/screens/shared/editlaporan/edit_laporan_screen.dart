@@ -53,6 +53,7 @@ class EditLaporanScreen extends StatelessWidget {
                   ),
                 ),
               );
+              Navigator.pop(context, true);
               Navigator.pop(context, true); // kembali ke halaman sebelumnya
             } else if (state is UpdateLaporanFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
