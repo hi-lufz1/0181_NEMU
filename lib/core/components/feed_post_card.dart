@@ -62,7 +62,7 @@ class FeedPostCard extends StatelessWidget {
             Row(
               children: [
                 const CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/logo.png'),
+                  backgroundImage: AssetImage('assets/images/splash.png'),
                 ),
                 const SizedBox(width: 12),
                 Column(

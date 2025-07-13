@@ -39,15 +39,39 @@ class AdminFeedHeader extends StatelessWidget {
                 context: context,
                 builder:
                     (_) => AlertDialog(
-                      title: const Text('Konfirmasi Logout'),
-                      content: const Text('Yakin ingin keluar dari akun ini?'),
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      title: const Text(
+                        'Konfirmasi Logout',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      content: const Text(
+                        'Yakin ingin keluar dari akun ini?',
+                        style: TextStyle(fontSize: 16, color: Colors.black54),
+                      ),
+                      actionsPadding: const EdgeInsets.only(
+                        right: 16,
+                        bottom: 12,
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.grey[700],
+                          ),
                           child: const Text('Batal'),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
                           child: const Text('Logout'),
                         ),
                       ],

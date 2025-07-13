@@ -91,10 +91,12 @@ class EditLaporanScreen extends StatelessWidget {
                                 bytes != null ? base64Encode(bytes) : null;
 
                             // Dapatkan AddLaporanReqModel dari FormCubit
+                            final lokasiLatLng = formCubit.state.lokasiLatLng;
+
                             final addModel = formCubit.toRequestModel(
                               base64Foto: base64Foto,
-                              latitude: laporan.latitude,
-                              longitude: laporan.longitude,
+                              latitude: lokasiLatLng?.latitude,
+                              longitude: lokasiLatLng?.longitude,
                             );
 
                             // Konversi ke UpdateReqModel

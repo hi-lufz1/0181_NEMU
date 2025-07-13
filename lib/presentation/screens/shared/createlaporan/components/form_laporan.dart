@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nemu_app/core/components/custom_text_field.dart';
 import 'package:nemu_app/core/components/image_popup_viewer.dart';
@@ -9,6 +10,7 @@ import 'package:nemu_app/core/constants/kategori_list.dart';
 import 'package:nemu_app/data/model/kategori_model.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_cubit.dart';
+import 'package:nemu_app/presentation/bloc/maps/bloc/map_bloc.dart';
 import 'laporan_type_selector.dart';
 import 'image_option_button.dart';
 
@@ -162,11 +164,22 @@ class FormLaporan extends StatelessWidget {
                   ),
                   onTap: () {
                     Navigator.pushNamed(context, '/map-picker').then((result) {
-                      if (result != null && result is String) {
-                        cubit.setLokasiText(result);
+                        debugPrint('🌍 Hasil MapPicker (Field): $result');
+                      if (result != null &&
+                          result is Map &&
+                          result['address'] is String &&
+                          result['latlng'] is LatLng) {
+                        cubit.setLokasi(result['address'], result['latlng']);
+                        context.read<MapBloc>().add(
+                          SetPickedLatLng(
+                            latitude: result['latlng'].latitude,
+                            longitude: result['latlng'].longitude,
+                          ),
+                        );
                       }
                     });
                   },
+
                   validator:
                       (val) =>
                           val == null || val.isEmpty
@@ -183,8 +196,18 @@ class FormLaporan extends StatelessWidget {
                 ),
                 onPressed: () {
                   Navigator.pushNamed(context, '/map-picker').then((result) {
-                    if (result != null && result is String) {
-                      cubit.setLokasiText(result);
+                       debugPrint('🌍 Hasil MapPicker (IconButton): $result');
+                    if (result != null &&
+                        result is Map &&
+                        result['address'] is String &&
+                        result['latlng'] is LatLng) {
+                      cubit.setLokasi(result['address'], result['latlng']);
+                      context.read<MapBloc>().add(
+                        SetPickedLatLng(
+                          latitude: result['latlng'].latitude,
+                          longitude: result['latlng'].longitude,
+                        ),
+                      );
                     }
                   });
                 },

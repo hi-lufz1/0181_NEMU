@@ -46,7 +46,7 @@ class DraftLaporanScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final draft = draftList[index];
                 return Card(
-                  elevation: 2,
+                  elevation: 1,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -64,13 +64,6 @@ class DraftLaporanScreen extends StatelessWidget {
                         arguments: draft,
                       );
                     },
-                    leading: Icon(
-                      draft.tipe == 'hilang'
-                          ? Icons.report
-                          : Icons.check_circle,
-                      color:
-                          draft.tipe == 'hilang' ? Colors.orange : Colors.green,
-                    ),
                     title: Text(
                       draft.namaBarang ?? 'Tanpa Nama',
                       style: const TextStyle(fontWeight: FontWeight.bold),

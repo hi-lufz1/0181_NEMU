@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:nemu_app/core/constants/colors.dart';
+import 'package:nemu_app/core/utils/status_utils.dart';
 import 'package:nemu_app/data/model/response/shared/getdetail_res_model.dart';
 
 class DetailLaporanContent extends StatelessWidget {
@@ -21,17 +22,24 @@ class DetailLaporanContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(data.namaBarang ?? '-', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          Text(
+            data.namaBarang ?? '-',
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 4),
           Row(
             children: [
               Chip(
                 label: Text(data.tipe?.toUpperCase() ?? '-'),
-                backgroundColor: data.tipe == 'hilang' ? Colors.black : AppColors.primary,
+                backgroundColor:
+                    data.tipe == 'hilang' ? Colors.black : AppColors.primary,
                 labelStyle: const TextStyle(color: Colors.white),
               ),
               const SizedBox(width: 8),
-              Chip(label: Text(data.kategori ?? '-'), backgroundColor: Colors.grey[200]),
+              Chip(
+                label: Text(data.kategori ?? '-'),
+                backgroundColor: Colors.grey[200],
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -43,22 +51,14 @@ class DetailLaporanContent extends StatelessWidget {
             margin: const EdgeInsets.only(top: 4),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: (data.status == 'Terverifikasi')
-                  ? Colors.green[100]
-                  : (data.status == 'Menunggu Verifikasi')
-                      ? Colors.orange[100]
-                      : Colors.grey[300],
+              color: getStatusBackgroundColor(data.status),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              data.status ?? '-',
+              getDisplayStatus(data.status),
               style: TextStyle(
                 fontSize: 14,
-                color: (data.status == 'Terverifikasi')
-                    ? Colors.green[800]
-                    : (data.status == 'Menunggu Verifikasi')
-                        ? Colors.orange[800]
-                        : Colors.black87,
+                color: getStatusTextColor(data.status),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -69,9 +69,7 @@ class DetailLaporanContent extends StatelessWidget {
           Row(
             children: [
               const CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColors.primary,
-                child: Icon(Icons.person, color: Colors.white, size: 18),
+                backgroundImage: AssetImage('assets/images/splash.png'),
               ),
               const SizedBox(width: 8),
               Text(data.nama ?? '-', style: const TextStyle(fontSize: 14)),
@@ -85,7 +83,10 @@ class DetailLaporanContent extends StatelessWidget {
           Text(data.lokasiText ?? '-', style: TextStyle(fontSize: 14)),
           if (data.catatanAdmin != null && data.catatanAdmin!.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text("Catatan Admin:", style: TextStyle(fontWeight: FontWeight.w600, color: Colors.red)),
+            Text(
+              "Catatan Admin:",
+              style: TextStyle(fontWeight: FontWeight.w600, color: Colors.red),
+            ),
             Text(data.catatanAdmin!, style: TextStyle(fontSize: 14)),
           ],
           const SizedBox(height: 16),

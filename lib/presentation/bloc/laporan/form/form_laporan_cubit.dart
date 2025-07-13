@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nemu_app/data/model/laporan_draf_model.dart';
 import 'package:nemu_app/data/model/request/shared/add_laporan_req_model.dart';
 import 'package:nemu_app/data/model/response/shared/getdetail_res_model.dart';
@@ -30,6 +31,22 @@ class FormLaporanCubit extends Cubit<FormLaporanState> {
     );
   }
 
+  void setLokasi(String address, LatLng latlng) {
+    emit(
+      state.copyWith(
+        lokasiText: address,
+        lokasiAddress: address,
+        lokasiLatLng: latlng,
+      ),
+    );
+  }
+
+  void restoreLokasi() {
+    if (state.lokasiAddress != null && state.lokasiLatLng != null) {
+      emit(state.copyWith(lokasiText: state.lokasiAddress));
+    }
+  }
+
   void setInitialFromDetail(Data data) {
     emit(
       FormLaporanState(
@@ -45,9 +62,9 @@ class FormLaporanCubit extends Cubit<FormLaporanState> {
   }
 
   AddLaporanReqModel toRequestModel({
-    required String? base64Foto,
-    required double? latitude,
-    required double? longitude,
+    String? base64Foto,
+    double? latitude,
+    double? longitude,
   }) {
     return AddLaporanReqModel(
       tipe: state.tipe,

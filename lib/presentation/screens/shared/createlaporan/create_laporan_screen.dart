@@ -57,7 +57,7 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
 
     final formCubit = context.read<FormLaporanCubit>();
     final foto = context.watch<FotoLaporanBloc>().state.file;
-    final pickedLatLng = context.watch<MapBloc>().state.pickedLatLng;
+    final lokasiLatLng = formCubit.state.lokasiLatLng;
 
     return BlocListener<AddLaporanBloc, AddLaporanState>(
       listener: (context, state) {
@@ -83,6 +83,7 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
           backgroundColor: Colors.white,
           foregroundColor: Colors.black87,
           elevation: 1,
+          centerTitle: true,
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -122,8 +123,8 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
                         pertanyaanVerifikasi: form.pertanyaanVerifikasi,
                         jawabanVerifikasi: form.jawabanVerifikasi,
                         foto: foto?.path,
-                        latitude: pickedLatLng?.latitude,
-                        longitude: pickedLatLng?.longitude,
+                        latitude:  lokasiLatLng?.latitude,
+                        longitude: lokasiLatLng?.longitude,
                       );
 
                       debugPrint('Simpan draf: ${formCubit.draftId ?? 'baru'}');
@@ -188,8 +189,8 @@ class _CreateLaporanScreenState extends State<CreateLaporanScreen> {
 
                         final laporan = formCubit.toRequestModel(
                           base64Foto: base64Foto,
-                          latitude: pickedLatLng?.latitude,
-                          longitude: pickedLatLng?.longitude,
+                          latitude: lokasiLatLng?.latitude,
+                          longitude: lokasiLatLng?.longitude,
                         );
 
                         context.read<AddLaporanBloc>().add(

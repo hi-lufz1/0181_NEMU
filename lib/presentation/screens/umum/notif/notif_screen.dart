@@ -57,7 +57,14 @@ class _NotifScreenState extends State<NotifScreen> {
               child: ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: notifikasi.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder:
+                    (_, __) => const Divider(
+                      color: Colors.grey,
+                      height: 24,
+                      thickness: 1,
+                      indent: 8,
+                      endIndent: 8,
+                    ),
                 itemBuilder: (context, index) {
                   final notif = notifikasi[index];
 

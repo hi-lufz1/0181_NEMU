@@ -1,5 +1,5 @@
-// lib/presentation/bloc/laporan/form/form_laporan_state.dart
 import 'package:equatable/equatable.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class FormLaporanState extends Equatable {
   final String namaBarang;
@@ -10,6 +10,9 @@ class FormLaporanState extends Equatable {
   final String pertanyaanVerifikasi;
   final String jawabanVerifikasi;
 
+  final String? lokasiAddress; 
+  final LatLng? lokasiLatLng; 
+
   const FormLaporanState({
     this.namaBarang = '',
     this.deskripsi = '',
@@ -18,6 +21,8 @@ class FormLaporanState extends Equatable {
     this.kategori,
     this.pertanyaanVerifikasi = '',
     this.jawabanVerifikasi = '',
+    this.lokasiAddress,
+    this.lokasiLatLng,
   });
 
   FormLaporanState copyWith({
@@ -28,6 +33,8 @@ class FormLaporanState extends Equatable {
     String? kategori,
     String? pertanyaanVerifikasi,
     String? jawabanVerifikasi,
+    String? lokasiAddress,
+    LatLng? lokasiLatLng,
   }) {
     return FormLaporanState(
       namaBarang: namaBarang ?? this.namaBarang,
@@ -35,9 +42,10 @@ class FormLaporanState extends Equatable {
       lokasiText: lokasiText ?? this.lokasiText,
       tipe: tipe ?? this.tipe,
       kategori: kategori ?? this.kategori,
-      pertanyaanVerifikasi:
-          pertanyaanVerifikasi ?? this.pertanyaanVerifikasi,
+      pertanyaanVerifikasi: pertanyaanVerifikasi ?? this.pertanyaanVerifikasi,
       jawabanVerifikasi: jawabanVerifikasi ?? this.jawabanVerifikasi,
+      lokasiAddress: lokasiAddress ?? this.lokasiAddress,
+      lokasiLatLng: lokasiLatLng ?? this.lokasiLatLng,
     );
   }
 
@@ -50,5 +58,7 @@ class FormLaporanState extends Equatable {
         kategori,
         pertanyaanVerifikasi,
         jawabanVerifikasi,
+        lokasiAddress,
+        lokasiLatLng,
       ];
 }

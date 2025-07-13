@@ -96,9 +96,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
       emit(
         state.copyWith(
+          pickedLatLng: latlng,
           pickedMarker: marker,
-          pickedAddress: address, // bisa null
-          error: null,
+          pickedAddress: address,
         ),
       );
     } catch (e) {
@@ -183,6 +183,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   ) async {
     try {
       final latLng = LatLng(event.latitude, event.longitude);
+      print("📌 SetPickedLatLng diterima: $latLng");
       final placemarks = await placemarkFromCoordinates(
         latLng.latitude,
         latLng.longitude,

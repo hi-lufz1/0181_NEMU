@@ -28,14 +28,34 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _confirmSelection(String pickedAddress) {
+    final pickedLatLng = context.read<MapBloc>().state.pickedLatLng;
+
+    debugPrint("Konfirmasi lokasi:");
+    debugPrint("Alamat: $pickedAddress");
+    debugPrint("LatLng: $pickedLatLng");
+
+    if (pickedLatLng == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Tentukan lokasi di peta terlebih dahulu"),
+        ),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
+      barrierDismissible: false, // cegah dialog tertutup tanpa klik
       builder:
           (_) => ConfirmLocationDialog(
             address: pickedAddress,
             onConfirm: () {
-              Navigator.pop(context); // Tutup dialo
-              Navigator.pop(context, pickedAddress); // kirim ke form
+              debugPrint("✅ onConfirm dari dialog dijalankan");
+              Navigator.pop(context);
+              Navigator.pop(context, {
+                'address': pickedAddress,
+                'latlng': pickedLatLng,
+              });
             },
           ),
     );
