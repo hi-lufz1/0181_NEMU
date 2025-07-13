@@ -3,7 +3,7 @@ import 'package:nemu_app/core/constants/colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color? color;
   final TextStyle? textStyle;
 

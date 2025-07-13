@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +18,7 @@ class FotoLaporanBloc extends Bloc<FotoLaporanEvent, FotoLaporanState> {
     on<SetSelectedFoto>(_onSetSelectedFoto);
     on<ClearSelectedFoto>(_onClearSelectedFoto);
     on<LoadFotoFromPath>(_onLoadFotoFromPath);
+    on<SetFromBase64>(_onSetFromBase64);
   }
 
   Future<void> _onPickFromGallery(
@@ -88,5 +90,15 @@ class FotoLaporanBloc extends Bloc<FotoLaporanEvent, FotoLaporanState> {
     } else {
       emit(FotoLaporanInitial()); // fallback kalau file-nya tidak ada
     }
+  }
+
+  Future<void> _onSetFromBase64(
+    SetFromBase64 event,
+    Emitter<FotoLaporanState> emit,
+  ) async {
+    final bytes = base64Decode(event.base64);
+    final file = File('${Directory.systemTemp.path}/temp_image.png');
+    await file.writeAsBytes(bytes);
+    emit(FotoLaporanPicked(file: file, message: 'Foto di-set dari base64'));
   }
 }

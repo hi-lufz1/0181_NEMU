@@ -3,13 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart'; // Tambahkan ini
 import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/data/datasource/draf_dao.dart';
+import 'package:nemu_app/data/model/response/shared/getdetail_res_model.dart';
 import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 import 'package:nemu_app/data/repository/draf/laporan_draf_repository.dart';
+import 'package:nemu_app/data/repository/klaim/klaim_repository.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
+import 'package:nemu_app/presentation/bloc/klaim/bloc/klaim_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/deleteuser/delete_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_cubit.dart';
 import 'package:nemu_app/presentation/bloc/laporan/detail/detail_laporan_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/update/update_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/maps/bloc/map_bloc.dart';
 import 'package:nemu_app/presentation/bloc/auth/register/register_bloc.dart';
 import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
@@ -21,6 +25,7 @@ import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/detaillaporan/detail_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/draf/draf_laporan_screen.dart';
+import 'package:nemu_app/presentation/screens/shared/editlaporan/edit_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/maps/map_screen.dart';
 
@@ -78,6 +83,15 @@ class MyApp extends StatelessWidget {
                   laporanRepository: context.read<LaporanRepository>(),
                 ),
           ),
+          BlocProvider<UpdateLaporanBloc>(
+            create:
+                (context) => UpdateLaporanBloc(
+                  laporanRepository: context.read<LaporanRepository>(),
+                ),
+          ),
+          BlocProvider(
+            create: (_) => KlaimBloc(klaimRepository: KlaimRepository()),
+          ),
         ],
         child: MaterialApp(
           title: 'NEMU App',
@@ -92,6 +106,11 @@ class MyApp extends StatelessWidget {
             '/detail-laporan': (context) {
               final id = ModalRoute.of(context)!.settings.arguments as String;
               return DetailLaporanScreen(laporanId: id);
+            },
+            '/edit-laporan': (context) {
+              final laporan =
+                  ModalRoute.of(context)!.settings.arguments as Data;
+              return EditLaporanScreen(laporan: laporan);
             },
           },
         ),

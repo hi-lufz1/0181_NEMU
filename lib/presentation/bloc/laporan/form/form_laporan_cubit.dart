@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:nemu_app/data/model/laporan_draf_model.dart';
 import 'package:nemu_app/data/model/request/shared/add_laporan_req_model.dart';
+import 'package:nemu_app/data/model/response/shared/getdetail_res_model.dart';
 import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_state.dart';
 
 class FormLaporanCubit extends Cubit<FormLaporanState> {
@@ -25,6 +26,20 @@ class FormLaporanCubit extends Cubit<FormLaporanState> {
         kategori: draf.kategori,
         pertanyaanVerifikasi: draf.pertanyaanVerifikasi ?? '',
         jawabanVerifikasi: draf.jawabanVerifikasi ?? '',
+      ),
+    );
+  }
+
+  void setInitialFromDetail(Data data) {
+    emit(
+      FormLaporanState(
+        namaBarang: data.namaBarang ?? '',
+        deskripsi: data.deskripsi ?? '',
+        lokasiText: data.lokasiText ?? '',
+        tipe: data.tipe,
+        kategori: data.kategori,
+        pertanyaanVerifikasi: data.pertanyaanVerifikasi ?? '',
+        jawabanVerifikasi: data.jawabanVerifikasi ?? '',
       ),
     );
   }

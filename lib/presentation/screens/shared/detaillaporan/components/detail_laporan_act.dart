@@ -4,7 +4,13 @@ import 'package:nemu_app/core/constants/colors.dart';
 import 'package:nemu_app/core/components/custom_button.dart';
 import 'package:nemu_app/core/components/custom_outline_button.dart';
 import 'package:nemu_app/data/model/response/shared/getdetail_res_model.dart';
+import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
+import 'package:nemu_app/presentation/bloc/klaim/bloc/klaim_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/deleteuser/delete_laporan_bloc.dart';
+import 'package:nemu_app/presentation/bloc/laporan/form/form_laporan_cubit.dart';
+import 'package:nemu_app/presentation/bloc/laporan/update/update_laporan_bloc.dart';
+import 'package:nemu_app/presentation/screens/shared/detaillaporan/components/klaim_dialog.dart';
+import 'package:nemu_app/presentation/screens/shared/editlaporan/edit_laporan_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DetailLaporanAct extends StatelessWidget {
@@ -16,59 +22,6 @@ class DetailLaporanAct extends StatelessWidget {
     required this.data,
     required this.isLaporanSaya,
   });
-
-  void _showKlaimDialog(BuildContext context) {
-    final jawabanController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text("Verifikasi Klaim"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(data.pertanyaanVerifikasi ?? "-"),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: jawabanController,
-                  decoration: const InputDecoration(
-                    labelText: 'Jawaban Anda',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Batal"),
-              ),
-              CustomButton(
-                label: "Klaim Sekarang",
-                onPressed: () {
-                  final jawaban = jawabanController.text.trim();
-                  if (jawaban.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Jawaban tidak boleh kosong"),
-                      ),
-                    );
-                    return;
-                  }
-
-                  Navigator.pop(context);
-                  Navigator.pushNamed(
-                    context,
-                    '/klaim',
-                    arguments: {"laporanId": data.id, "jawaban": jawaban},
-                  );
-                },
-              ),
-            ],
-          ),
-    );
-  }
 
   void _hubungiPenemu(BuildContext context) async {
     final url = data.kontak?.replaceAll(' ', '').replaceAll('+', '62');
@@ -106,10 +59,45 @@ class DetailLaporanAct extends StatelessWidget {
                   child: CustomOutlineButton(
                     label: "Edit",
                     onPressed: () {
-                      Navigator.pushNamed(
+                      Navigator.push(
                         context,
-                        '/edit-laporan',
-                        arguments: data,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => MultiBlocProvider(
+                                providers: [
+                                  BlocProvider(
+                                    create:
+                                        (_) =>
+                                            FormLaporanCubit()
+                                              ..setInitialFromDetail(data),
+                                  ),
+                                  BlocProvider(
+                                    create: (_) {
+                                      final bloc = FotoLaporanBloc();
+                                      if (data.foto != null) {
+                                        bloc.add(
+                                          SetFromBase64(base64: data.foto!),
+                                        );
+                                      }
+                                      return bloc;
+                                    },
+                                  ),
+                                  BlocProvider(
+                                    create:
+                                        (_) => DeleteLaporanBloc(
+                                          laporanRepository: context.read(),
+                                        ),
+                                  ),
+                                  BlocProvider(
+                                    create:
+                                        (_) => UpdateLaporanBloc(
+                                          laporanRepository: context.read(),
+                                        ),
+                                  ),
+                                ],
+                                child: EditLaporanScreen(laporan: data),
+                              ),
+                        ),
                       );
                     },
                   ),
@@ -141,7 +129,11 @@ class DetailLaporanAct extends StatelessWidget {
                                       DeleteLaporanSubmitted(id: data.id!),
                                     );
                                     Navigator.pop(context);
-                                      Navigator.pushNamedAndRemoveUntil(context, '/feed',  (_) => false);
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      '/feed',
+                                      (_) => false,
+                                    );
                                   },
                                 ),
                               ],
@@ -157,7 +149,12 @@ class DetailLaporanAct extends StatelessWidget {
             if (data.tipe == 'ditemukan') ...[
               CustomButton(
                 label: "Klaim Barang Ini",
-                onPressed: () => _showKlaimDialog(context),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => KlaimDialog(data: data),
+                  );
+                },
               ),
             ] else if (data.tipe == 'hilang') ...[
               CustomButton(
