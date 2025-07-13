@@ -11,6 +11,7 @@ class NotifBloc extends Bloc<NotifEvent, NotifState> {
 
   NotifBloc({required this.notifRepository}) : super(NotifInitial()) {
     on<LoadNotifikasi>(_onLoadNotifikasi);
+    on<TandaiNotifSudahDibaca>(_onTandaiNotifSudahDibaca);
   }
 
   Future<void> _onLoadNotifikasi(
@@ -25,6 +26,25 @@ class NotifBloc extends Bloc<NotifEvent, NotifState> {
       emit(NotifSuccess(resModel: res));
     } else {
       emit(NotifFailure(resModel: res));
+    }
+  }
+
+  Future<void> _onTandaiNotifSudahDibaca(
+    TandaiNotifSudahDibaca event,
+    Emitter<NotifState> emit,
+  ) async {
+    final markRes = await notifRepository.tandaiSudahDibaca(event.id);
+
+    if (markRes.status != 200) {
+      emit(NotifFailure(resModel: markRes));
+      return;
+    }
+
+    final updated = await notifRepository.getNotifikasiUser();
+    if (updated.status == 200) {
+      emit(NotifSuccess(resModel: updated));
+    } else {
+      emit(NotifFailure(resModel: updated));
     }
   }
 }

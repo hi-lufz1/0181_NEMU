@@ -8,6 +8,7 @@ import 'package:nemu_app/data/repository/auth/auth_repository.dart';
 import 'package:nemu_app/data/repository/draf/laporan_draf_repository.dart';
 import 'package:nemu_app/data/repository/klaim/klaim_repository.dart';
 import 'package:nemu_app/data/repository/laporan/laporan_repository.dart';
+import 'package:nemu_app/data/repository/notif/notif_repository.dart';
 import 'package:nemu_app/presentation/bloc/auth/login/login_bloc.dart';
 import 'package:nemu_app/presentation/bloc/klaim/bloc/klaim_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/deleteuser/delete_laporan_bloc.dart';
@@ -20,6 +21,7 @@ import 'package:nemu_app/presentation/bloc/camera/bloc/foto_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/add/add_laporan_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/draf/draf_bloc.dart';
 import 'package:nemu_app/presentation/bloc/laporan/laporanuser/laporan_user_bloc.dart';
+import 'package:nemu_app/presentation/bloc/notif/bloc/notif_bloc.dart';
 import 'package:nemu_app/presentation/screens/auth/login_screen.dart';
 import 'package:nemu_app/presentation/screens/auth/register_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/createlaporan/create_laporan_screen.dart';
@@ -28,6 +30,7 @@ import 'package:nemu_app/presentation/screens/shared/draf/draf_laporan_screen.da
 import 'package:nemu_app/presentation/screens/shared/editlaporan/edit_laporan_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/feed/feed_screen.dart';
 import 'package:nemu_app/presentation/screens/shared/maps/map_screen.dart';
+import 'package:nemu_app/presentation/screens/umum/notif/notif_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -92,6 +95,9 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (_) => KlaimBloc(klaimRepository: KlaimRepository()),
           ),
+          BlocProvider(
+            create: (_) => NotifBloc(notifRepository: NotifRepository()),
+          ),
         ],
         child: MaterialApp(
           title: 'NEMU App',
@@ -112,6 +118,7 @@ class MyApp extends StatelessWidget {
                   ModalRoute.of(context)!.settings.arguments as Data;
               return EditLaporanScreen(laporan: laporan);
             },
+            '/notifikasi': (context) => const NotifScreen(),
           },
         ),
       ),

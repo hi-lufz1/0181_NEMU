@@ -28,3 +28,12 @@ class NotifFailure extends NotifState {
   @override
   List<Object?> get props => [resModel];
 }
+
+class NotifMarkedAsRead extends NotifState {
+  final String terkaitId;
+
+  const NotifMarkedAsRead({required this.terkaitId});
+
+  @override
+  List<Object?> get props => [terkaitId];
+}

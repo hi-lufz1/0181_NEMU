@@ -8,3 +8,13 @@ sealed class NotifEvent extends Equatable {
 }
 
 class LoadNotifikasi extends NotifEvent {}
+
+class TandaiNotifSudahDibaca extends NotifEvent {
+  final String id;
+  final String terkaitId;
+
+  const TandaiNotifSudahDibaca({required this.id, required this.terkaitId});
+
+  @override
+  List<Object> get props => [id, terkaitId];
+}

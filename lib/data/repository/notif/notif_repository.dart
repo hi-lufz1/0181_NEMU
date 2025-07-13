@@ -17,4 +17,21 @@ class NotifRepository {
       );
     }
   }
+
+  Future<NotifResModel> tandaiSudahDibaca(String id) async {
+  try {
+    final res = await _httpClient.putWithToken(
+      'notif/$id/read',
+      {},
+    );
+    return NotifResModel.fromJson(res.body); 
+  } catch (e) {
+    return NotifResModel(
+      status: 500,
+      message: 'Gagal menandai notifikasi.',
+      data: [], 
+    );
+  }
+}
+
 }

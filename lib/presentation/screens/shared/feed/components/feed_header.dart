@@ -10,47 +10,53 @@ class FeedHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Stack(
+          // Logo + Notif
+          Row(
             children: [
-              Row(
-                spacing: 4,
+              Stack(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/notifikasi');
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.notifications, size: 28),
                     ),
-                    child: const Icon(Icons.notifications, size: 28),
                   ),
-                  Image.asset(
-                    'assets/images/logotext.png',
-                    height: 20,
-                    fit: BoxFit.fill,
-                  ),
+                  // Uncomment ini jika nanti ingin badge merah kecil
+                  // Positioned(
+                  //   top: 2,
+                  //   right: 2,
+                  //   child: Container(
+                  //     width: 10,
+                  //     height: 10,
+                  //     decoration: const BoxDecoration(
+                  //       color: Colors.red,
+                  //       shape: BoxShape.circle,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
-              // Positioned(
-              //   top: 0,
-              //   right: 0,
-              //   child: Container(
-              //     padding: const EdgeInsets.all(4),
-              //     decoration: const BoxDecoration(
-              //       color: Colors.red,
-              //       shape: BoxShape.circle,
-              //     ),
-              //     child: const Text(
-              //       '',
-              //       style: TextStyle(color: Colors.white, fontSize: 10),
-              //     ),
-              //   ),
-              // ),
+              const SizedBox(width: 8),
+              Image.asset(
+                'assets/images/logotext.png',
+                height: 20,
+                fit: BoxFit.fill,
+              ),
             ],
           ),
+
+          // Tombol Logout
           IconButton(
-            icon: Icon(Icons.logout, size: 28, color: Colors.black),
+            icon: const Icon(Icons.logout, size: 28, color: Colors.black),
             onPressed: () {
-              //logout
+              // TODO: Logout handler
             },
           ),
         ],
